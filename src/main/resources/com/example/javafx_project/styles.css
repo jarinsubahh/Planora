@@ -1,0 +1,139 @@
+/* ================= ROOT ================= */
+
+#root {
+    -fx-background-color: #F5F6F8;
+    -fx-font-family: "Poppins", "Segoe UI", "System";
+}
+
+
+/* ================= NAVBAR ================= */
+
+#navbar {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-effect: none;
+}
+
+/* Logo */
+
+#logoIcon {
+    -fx-font-size: 12px;
+    -fx-text-fill: #FF7AC6;
+}
+
+#logoText {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #2E2E2E;
+    -fx-letter-spacing: 1px;
+}
+
+
+/* ================= NAV LINKS ================= */
+
+#homeLink {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4F6DF5;
+}
+
+#featuresLink {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #6B7280;
+}
+
+#featuresLink:hover {
+    -fx-text-fill: #4F6DF5;
+}
+
+
+/* ================= SIGN IN BUTTON ================= */
+
+#signInBtn {
+    -fx-padding: 8 18 8 18;
+    -fx-background-radius: 20;
+    -fx-background-color: linear-gradient(to right, #8EA2FF, #6C7BFF);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(gaussian, rgba(108,123,255,0.35), 15, 0, 0, 4);
+}
+
+#signInBtn:hover {
+    -fx-background-color: linear-gradient(to right, #7C90FF, #5F6EFF);
+    -fx-effect: dropshadow(gaussian, rgba(108,123,255,0.5), 20, 0, 0, 6);
+}
+
+
+/* ================= HERO DECOR ICON ================= */
+
+#decoIcon {
+    -fx-font-size: 15px;
+    -fx-text-fill: #FF7AC6;
+}
+
+
+/* ================= MAIN HEADING ================= */
+
+.headingGradient {
+    -fx-font-size: 48px;
+    -fx-font-weight: 800;
+    -fx-text-alignment: center;
+    -fx-text-fill: linear-gradient(to right, #FF7AC6, #B58CFF, #6EC1FF);
+}
+
+
+/* ================= DESCRIPTION ================= */
+
+#descriptionText {
+    -fx-font-size: 15px;
+    -fx-text-fill: #6B7280;
+    -fx-line-spacing: 5px;
+    -fx-text-alignment: center;
+}
+
+
+/* ================= HERO BUTTONS ================= */
+
+#getStartedBtn {
+    -fx-padding: 12 28 12 28;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 28;
+
+    -fx-background-color: linear-gradient(to right, #FF7AC6, #B58CFF);
+    -fx-text-fill: white;
+
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(181,140,255,0.45), 20, 0, 0, 6);
+}
+
+#getStartedBtn:hover {
+    -fx-background-color: linear-gradient(to right, #FF65B5, #A675FF);
+    -fx-effect: dropshadow(gaussian, rgba(181,140,255,0.6), 25, 0, 0, 8);
+}
+
+
+/* Learn More Button */
+
+#learnMoreBtn {
+    -fx-padding: 12 28 12 28;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 28;
+
+    -fx-background-color: white;
+    -fx-border-color: #E5E7EB;
+    -fx-border-radius: 28;
+
+    -fx-text-fill: #2E2E2E;
+    -fx-cursor: hand;
+}
+
+#learnMoreBtn:hover {
+    -fx-background-color: #F3E8FF;
+    -fx-border-color: #D8B4FE;
+}
