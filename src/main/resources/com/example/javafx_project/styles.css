@@ -1,20 +1,14 @@
-/* ================= ROOT ================= */
-
-#root {
-    -fx-background-color: #F5F6F8;
+/* ================= GLOBAL ROOT ================= */
+#root, .auth-root {
+    /* Matches Landing Page background */
+    -fx-background-color: linear-gradient(to bottom right,#F5F6F8, #F9FAFB);
     -fx-font-family: "Poppins", "Segoe UI", "System";
 }
 
-
-/* ================= NAVBAR ================= */
-
+/* ================= NAVBAR (Landing) ================= */
 #navbar {
     -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-effect: none;
 }
-
-/* Logo */
 
 #logoIcon {
     -fx-font-size: 12px;
@@ -24,32 +18,11 @@
 #logoText {
     -fx-font-size: 18px;
     -fx-font-weight: 700;
-    -fx-text-fill: #2E2E2E;
+    -fx-text-fill: white;
     -fx-letter-spacing: 1px;
 }
 
-
-/* ================= NAV LINKS ================= */
-
-#homeLink {
-    -fx-font-size: 14px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #4F6DF5;
-}
-
-#featuresLink {
-    -fx-font-size: 14px;
-    -fx-font-weight: 500;
-    -fx-text-fill: #6B7280;
-}
-
-#featuresLink:hover {
-    -fx-text-fill: #4F6DF5;
-}
-
-
-/* ================= SIGN IN BUTTON ================= */
-
+/* ================= LANDING BUTTONS ================= */
 #signInBtn {
     -fx-padding: 8 18 8 18;
     -fx-background-radius: 20;
@@ -58,25 +31,8 @@
     -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-cursor: hand;
-
     -fx-effect: dropshadow(gaussian, rgba(108,123,255,0.35), 15, 0, 0, 4);
 }
-
-#signInBtn:hover {
-    -fx-background-color: linear-gradient(to right, #7C90FF, #5F6EFF);
-    -fx-effect: dropshadow(gaussian, rgba(108,123,255,0.5), 20, 0, 0, 6);
-}
-
-
-/* ================= HERO DECOR ICON ================= */
-
-#decoIcon {
-    -fx-font-size: 15px;
-    -fx-text-fill: #FF7AC6;
-}
-
-
-/* ================= MAIN HEADING ================= */
 
 .headingGradient {
     -fx-font-size: 48px;
@@ -85,55 +41,121 @@
     -fx-text-fill: linear-gradient(to right, #FF7AC6, #B58CFF, #6EC1FF);
 }
 
-
-/* ================= DESCRIPTION ================= */
-
-#descriptionText {
-    -fx-font-size: 15px;
-    -fx-text-fill: #6B7280;
-    -fx-line-spacing: 5px;
-    -fx-text-alignment: center;
-}
-
-
-/* ================= HERO BUTTONS ================= */
-
 #getStartedBtn {
     -fx-padding: 12 28 12 28;
     -fx-font-size: 15px;
     -fx-font-weight: 700;
     -fx-background-radius: 28;
-
     -fx-background-color: linear-gradient(to right, #FF7AC6, #B58CFF);
     -fx-text-fill: white;
-
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(181,140,255,0.45), 20, 0, 0, 6);
 }
 
-#getStartedBtn:hover {
-    -fx-background-color: linear-gradient(to right, #FF65B5, #A675FF);
-    -fx-effect: dropshadow(gaussian, rgba(181,140,255,0.6), 25, 0, 0, 8);
+/* ================= AUTHENTICATION CARD (Glow Theme) ================= */
+
+/* Card Container - Glassmorphism like the Landing Page logic */
+.auth-card {
+    -fx-background-color: rgba(255, 255, 255, 0.05); /* Transparent glass effect */
+    -fx-background-radius: 28;
+    -fx-padding: 40;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 28;
+    -fx-border-width: 1.5;
+    /* Neon Glow effect matching the 'Get Started' button glow */
+    -fx-effect: dropshadow(gaussian, rgba(181, 140, 255, 0.2), 40, 0, 0, 0);
 }
 
+/* Headings - Using the "Plan Smart" / "Glow Bright" Gradient */
+.header-text {
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+    -fx-text-fill: linear-gradient(to right, #FF7AC6, #B58CFF, #6EC1FF);
+}
 
-/* Learn More Button */
+.subtitle-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #94A3B8; /* Muted slate for readability */
+    -fx-font-weight: 400;
+}
 
-#learnMoreBtn {
-    -fx-padding: 12 28 12 28;
-    -fx-font-size: 15px;
-    -fx-font-weight: 600;
+/* Labels and Inputs - Modern Dark Style */
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #B58CFF;
+    -fx-padding: 0 0 5 2;
+}
+
+.auth-input {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 14;
+    -fx-font-size: 14px;
+    -fx-text-fill: purple;
+    -fx-prompt-text-fill: #64748B;
+}
+
+.auth-input:focused {
+    -fx-border-color: #B58CFF;
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-effect: dropshadow(gaussian, rgba(181, 140, 255, 0.4), 12, 0, 0, 0);
+}
+
+/* Sign In / Get Started Button - Exact Landing Page Gradient */
+.btn-gradient {
+    -fx-background-color: linear-gradient(to right, #FF7AC6, #B58CFF);
     -fx-background-radius: 28;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-font-size: 15px;
+    -fx-padding: 12 28 12 28;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(255, 122, 198, 0.45), 20, 0, 0, 6);
+}
 
-    -fx-background-color: white;
+.btn-gradient:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(gaussian, rgba(181, 140, 255, 0.7), 25, 0, 0, 8);
+}
+
+/* Social Buttons & Links */
+.social-btn {
+    -fx-background-color: #FFFFFF;
     -fx-border-color: #E5E7EB;
     -fx-border-radius: 28;
+    -fx-background-radius: 28;
+    -fx-padding: 10 24 10 24;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-text-fill: #4B5563; /* Change this to a dark slate gray for visibility */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+.social-btn:hover {
+    -fx-background-color: #F9FAFB;
+    -fx-border-color: #B58CFF; /* Purple glow on hover */
+    -fx-text-fill: #1F2937; /* Darker text on hover */
+}
 
-    -fx-text-fill: #2E2E2E;
+.back-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
     -fx-cursor: hand;
 }
 
-#learnMoreBtn:hover {
-    -fx-background-color: #F3E8FF;
-    -fx-border-color: #D8B4FE;
+.back-link:hover {
+    -fx-text-fill: #FF7AC6;
 }
+
+/* Error Labels */
+.error-text {
+    -fx-text-fill: #FB7185;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+} give full code

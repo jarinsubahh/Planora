@@ -12,9 +12,6 @@ module com.example.javafx_project {
     requires com.almasb.fxgl.all;
     requires java.prefs;
 
-    opens com.buet.planora to javafx.fxml;
-    exports com.buet.planora;
-
     opens com.example.javafx_project to javafx.fxml;
     exports com.example.javafx_project;
 }

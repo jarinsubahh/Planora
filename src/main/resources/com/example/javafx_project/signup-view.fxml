@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane prefHeight="700.0" prefWidth="1000.0" styleClass="auth-root"
+           stylesheets="@styles.css"
+           xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.javafx_project.SignUpController">
+
+    <VBox alignment="CENTER" spacing="25" styleClass="auth-card" maxWidth="420" maxHeight="650">
+
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="Plan Smart" styleClass="header-text" />
+            <Label text="Glow Bright" style="-fx-font-size: 26; -fx-font-weight: 800; -fx-text-fill: #6EC1FF;" />
+            <Label text="Start your journey with Planora" styleClass="subtitle-text" />
+        </VBox>
+
+        <VBox spacing="15">
+            <VBox spacing="5">
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="usernameField" promptText="Choose a username" styleClass="auth-input"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Password" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Create password" styleClass="auth-input"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Confirm" styleClass="field-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Repeat password" styleClass="auth-input"/>
+            </VBox>
+        </VBox>
+
+        <Label fx:id="errorLabel" styleClass="error-text" visible="false"/>
+
+        <Button text="Get Started ✨" onAction="#handleSignUp" styleClass="btn-gradient" maxWidth="Infinity" />
+
+        <Hyperlink text="Already have an account? Sign In" onAction="#goToSignIn" styleClass="back-link"/>
+    </VBox>
+</StackPane>

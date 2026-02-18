@@ -142,7 +142,7 @@ public class PlanoraLandingPage extends Application {
         mainContainer.getChildren().addAll(navbar, heroSection);
         root.getChildren().add(mainContainer);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1000, 700);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         primaryStage.setTitle("PLANORA - Landing Page");
@@ -152,6 +152,16 @@ public class PlanoraLandingPage extends Application {
 
         // ===== Smooth Sign In Button Animation =====
         addHoverAnimation(signInBtn);
+        signInBtn.setOnAction(e -> {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("signin-view.fxml"));
+                Scene signInScene = new Scene(loader.load(), 1000, 700);
+                Stage stage = (Stage) signInBtn.getScene().getWindow();
+                stage.setScene(signInScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // ===== Fade In Hero Section =====
         FadeTransition fade = new FadeTransition(Duration.millis(900), heroSection);
