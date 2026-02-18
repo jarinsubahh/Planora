@@ -24,7 +24,7 @@ public class PlanoraLandingPage extends Application {
         StackPane root = new StackPane();
         root.setId("root");
 
-        // ===== Floating Background Circle =====
+        // Floating Background Circle
         Circle bgCircle = new Circle(250, Color.web("#FFD6E8", 0.15));
         bgCircle.setTranslateX(-300);
         bgCircle.setTranslateY(-150);
@@ -43,7 +43,7 @@ public class PlanoraLandingPage extends Application {
         mainContainer.setSpacing(40);
         mainContainer.setPadding(new Insets(20, 40, 20, 40));
 
-        // ===== NAVBAR =====
+        // NAVBAR
         HBox navbar = new HBox();
         navbar.setId("navbar");
         navbar.setPrefHeight(70);
@@ -87,7 +87,7 @@ public class PlanoraLandingPage extends Application {
         navLinks.getChildren().addAll(homeLink, featuresLink, signInBtn);
         navbar.getChildren().addAll(logoSection, spacer, navLinks);
 
-        // ===== HERO SECTION =====
+        // HERO SECTION
         VBox heroSection = new VBox(25);
         heroSection.setAlignment(Pos.CENTER);
         heroSection.setPadding(new Insets(35, 0, 0, 0));
@@ -150,10 +150,10 @@ public class PlanoraLandingPage extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
-        // ===== Smooth Sign In Button Animation =====
+        //  Smooth Sign In Button Animation
         addHoverAnimation(signInBtn);
 
-        // ===== Fade In Hero Section =====
+        //Fade In Hero Section
         FadeTransition fade = new FadeTransition(Duration.millis(900), heroSection);
         fade.setFromValue(0);
         fade.setToValue(1);

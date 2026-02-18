@@ -1,13 +1,10 @@
-/* ================= ROOT ================= */
-
 #root {
     -fx-background-color: #F5F6F8;
     -fx-font-family: "Poppins", "Segoe UI", "System";
 }
 
 
-/* ================= NAVBAR ================= */
-
+/* NAVBAR of landing page*/
 #navbar {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -29,7 +26,7 @@
 }
 
 
-/* ================= NAV LINKS ================= */
+/* NAV LINKS */
 
 #homeLink {
     -fx-font-size: 14px;
@@ -48,7 +45,7 @@
 }
 
 
-/* ================= SIGN IN BUTTON ================= */
+/* SIGN IN BUTTON */
 
 #signInBtn {
     -fx-padding: 8 18 8 18;
@@ -68,7 +65,7 @@
 }
 
 
-/* ================= HERO DECOR ICON ================= */
+/* HERO DECOR ICON  */
 
 #decoIcon {
     -fx-font-size: 15px;
@@ -76,7 +73,7 @@
 }
 
 
-/* ================= MAIN HEADING ================= */
+/* MAIN HEADING */
 
 .headingGradient {
     -fx-font-size: 48px;
@@ -86,7 +83,7 @@
 }
 
 
-/* ================= DESCRIPTION ================= */
+/* DESCRIPTION */
 
 #descriptionText {
     -fx-font-size: 15px;
@@ -96,7 +93,7 @@
 }
 
 
-/* ================= HERO BUTTONS ================= */
+/* HERO BUTTONS  */
 
 #getStartedBtn {
     -fx-padding: 12 28 12 28;
