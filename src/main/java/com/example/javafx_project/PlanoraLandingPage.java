@@ -152,6 +152,20 @@ public class PlanoraLandingPage extends Application {
             }
         });
 
+        getStartedBtn.setOnAction(e -> {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/com/example/javafx_project/signin-view.fxml")
+                );
+                Scene signInScene = new Scene(loader.load(), 800, 600);
+                Stage stage = (Stage) getStartedBtn.getScene().getWindow();
+                stage.setScene(signInScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+
         FadeTransition fade = new FadeTransition(Duration.millis(900), heroSection);
         fade.setFromValue(0);
         fade.setToValue(1);
