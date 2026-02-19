@@ -77,3 +77,23 @@
        -fx-scale-y: 1.05;
        -fx-effect: dropshadow(gaussian, rgba(244,114,182,0.6), 20, 0, 0, 6);
         }
+
+.calendar-button {
+    -fx-background-radius: 15;
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+.calendar-button:hover {
+    -fx-background-color: #E9D5FF;
+}
+.task-card {
+    -fx-background-color: white;
+    -fx-background-radius: 25;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 8);
+}
+.task-card:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
