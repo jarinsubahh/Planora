@@ -11,6 +11,7 @@ module com.example.javafx_project {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.prefs;
+    requires java.desktop;
 
     opens com.example.javafx_project to javafx.fxml;
     exports com.example.javafx_project;

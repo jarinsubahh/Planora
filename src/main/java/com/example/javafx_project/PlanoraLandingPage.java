@@ -20,11 +20,9 @@ public class PlanoraLandingPage extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // Root
         StackPane root = new StackPane();
         root.setId("root");
 
-        // Floating Background Circle
         Circle bgCircle = new Circle(250, Color.web("#FFD6E8", 0.15));
         bgCircle.setTranslateX(-300);
         bgCircle.setTranslateY(-150);
@@ -43,14 +41,12 @@ public class PlanoraLandingPage extends Application {
         mainContainer.setSpacing(40);
         mainContainer.setPadding(new Insets(20, 40, 20, 40));
 
-        // NAVBAR
         HBox navbar = new HBox();
         navbar.setId("navbar");
         navbar.setPrefHeight(70);
         navbar.setAlignment(Pos.CENTER);
         navbar.setPadding(new Insets(0, 25, 0, 25));
 
-        // Logo Section
         HBox logoSection = new HBox(8);
         logoSection.setAlignment(Pos.CENTER_LEFT);
 
@@ -67,11 +63,9 @@ public class PlanoraLandingPage extends Application {
 
         logoSection.getChildren().addAll(logoStack, logoText);
 
-        // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Nav Links
         HBox navLinks = new HBox(25);
         navLinks.setAlignment(Pos.CENTER_RIGHT);
 
@@ -87,12 +81,10 @@ public class PlanoraLandingPage extends Application {
         navLinks.getChildren().addAll(homeLink, featuresLink, signInBtn);
         navbar.getChildren().addAll(logoSection, spacer, navLinks);
 
-        // HERO SECTION
         VBox heroSection = new VBox(25);
         heroSection.setAlignment(Pos.CENTER);
         heroSection.setPadding(new Insets(35, 0, 0, 0));
 
-        // Decorative Icon
         Circle decoCircle = new Circle(22, Color.web("#FAD6E8"));
         decoCircle.setEffect(new DropShadow(10, Color.web("#FFD6E8")));
 
@@ -101,7 +93,6 @@ public class PlanoraLandingPage extends Application {
 
         StackPane iconCircle = new StackPane(decoCircle, decoIcon);
 
-        // Headings
         VBox headingBox = new VBox(-8);
         headingBox.setAlignment(Pos.CENTER);
 
@@ -113,7 +104,6 @@ public class PlanoraLandingPage extends Application {
 
         headingBox.getChildren().addAll(heading1, heading2);
 
-        // Description
         Label description = new Label(
                 "PLANORA helps you organize your life with beauty and clarity.\n" +
                         "Achieve your dreams in a workspace that feels like magic."
@@ -124,7 +114,6 @@ public class PlanoraLandingPage extends Application {
         description.setTextAlignment(TextAlignment.CENTER);
         description.setAlignment(Pos.CENTER);
 
-        // Buttons
         HBox buttonBox = new HBox(25);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
@@ -143,17 +132,26 @@ public class PlanoraLandingPage extends Application {
         root.getChildren().add(mainContainer);
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/styles.css").toExternalForm());
 
         primaryStage.setTitle("PLANORA - Landing Page");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
 
-        //  Smooth Sign In Button Animation
         addHoverAnimation(signInBtn);
+        signInBtn.setOnAction(e -> {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/com/example/javafx_project/signin-view.fxml"));
+                Scene signInScene = new Scene(loader.load(), 800, 600);
+                Stage stage = (Stage) signInBtn.getScene().getWindow();
+                stage.setScene(signInScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
-        //Fade In Hero Section
         FadeTransition fade = new FadeTransition(Duration.millis(900), heroSection);
         fade.setFromValue(0);
         fade.setToValue(1);

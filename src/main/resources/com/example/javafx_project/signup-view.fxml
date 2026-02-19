@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane prefHeight="600.0" prefWidth="800.0" styleClass="auth-root"
+           stylesheets="@styles.css"
+           xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.javafx_project.SignUpController">
+
+    <!-- Centered card -->
+    <VBox alignment="CENTER" spacing="20" styleClass="auth-card" maxWidth="380" maxHeight="500">
+
+        <!-- Headings -->
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="Plan Smart" styleClass="header-text" />
+            <Label text="Glow Bright" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #6EC1FF;" />
+            <Label text="Start your journey with Planora" styleClass="subtitle-text" />
+        </VBox>
+
+        <!-- Input fields -->
+        <VBox spacing="15" maxWidth="300">
+            <VBox spacing="5">
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="usernameField" promptText="Choose a username" styleClass="auth-input"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Password" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Create password" styleClass="auth-input"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Confirm" styleClass="field-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Repeat password" styleClass="auth-input"/>
+            </VBox>
+        </VBox>
+
+        <!-- Error label -->
+        <Label fx:id="errorLabel" styleClass="error-text" visible="false"/>
+
+        <!-- Sign Up button -->
+        <Button text="Get Started ✨" onAction="#handleSignUp"
+                styleClass="btn-gradient" maxWidth="300" />
+
+        <!-- Sign In link -->
+        <Hyperlink text="Already have an account? Sign In" onAction="#goToSignIn" styleClass="back-link"/>
+    </VBox>
+</StackPane>

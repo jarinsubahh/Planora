@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane prefHeight="600.0" prefWidth="800.0" styleClass="signin-root"
+           stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SignInController">
+
+    <!-- Centered card -->
+    <VBox alignment="CENTER" maxWidth="380.0" maxHeight="480.0" spacing="20" styleClass="auth-card">
+
+        <!-- Decorative icon -->
+        <StackPane>
+            <Circle radius="24" fill="#FDF2F8" stroke="#FF7AC6" strokeWidth="1.5"/>
+            <Label text="✨" style="-fx-font-size: 22;"/>
+        </StackPane>
+
+        <!-- Headings -->
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="Welcome Back" styleClass="header-text" />
+            <Label text="Time to Glow and Grow" styleClass="subtitle-text" />
+        </VBox>
+
+        <!-- Back link -->
+        <Button text="← Back to Home" onAction="#handleBackToHome" styleClass="back-link"/>
+
+        <!-- Input fields -->
+        <VBox spacing="15" maxWidth="300">
+            <VBox spacing="5">
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="usernameField" promptText="Enter your name" styleClass="auth-input"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Password" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="auth-input"/>
+            </VBox>
+        </VBox>
+
+        <!-- Sign In button -->
+        <Button fx:id="signInSubmitBtn" text="Sign In ✨" onAction="#onLoginButtonClick"
+                styleClass="btn-gradient" maxWidth="300" />
+
+        <!-- Sign Up link -->
+        <HBox alignment="CENTER" spacing="5">
+            <Label text="New here?" style="-fx-text-fill: #6B7280;"/>
+            <Hyperlink text="Create an Account" onAction="#goToSignUp"
+                       style="-fx-text-fill: #FF7AC6; -fx-font-weight: 800; -fx-underline: false;"/>
+        </HBox>
+
+        <!-- Separator -->
+        <Label text="OR CONTINUE WITH" styleClass="subtitle-text" />
+
+        <!-- Social buttons -->
+        <HBox spacing="10" alignment="CENTER" maxWidth="300">
+            <Button text="Google" styleClass="social-btn" maxWidth="Infinity"/>
+            <Button text="GitHub" styleClass="social-btn" maxWidth="Infinity"/>
+        </HBox>
+    </VBox>
+</StackPane>

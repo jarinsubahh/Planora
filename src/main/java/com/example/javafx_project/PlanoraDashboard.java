@@ -64,7 +64,18 @@ public class PlanoraDashboard extends Application {
         bottomItems.setAlignment(Pos.BOTTOM_LEFT);
         bottomItems.setPadding(new Insets(0, 0, 30, 0));
         Label settingsItem = createNavItem("⚙ Settings", false);
+
         Label logoutItem = createNavItem("🚪 Logout", false);
+        // Make logout clickable
+        logoutItem.setOnMouseClicked(e -> {
+            try {
+                PlanoraLandingPage landing = new PlanoraLandingPage();
+                landing.start(primaryStage);  // return to Landing Page
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
         bottomItems.getChildren().addAll(settingsItem, logoutItem);
 
         sidebar.getChildren().addAll(logoBox, navItems, bottomItems);
@@ -114,11 +125,22 @@ public class PlanoraDashboard extends Application {
 
         statCards.getChildren().addAll(todayCard, upcomingCard, streakCard, starsCard);
 
-        // Tasks section placeholder
+        // Tasks section
         VBox tasksSection = new VBox(10);
         Label tasksHeader = new Label("🌸 Today’s Tasks");
         tasksHeader.setId("tasksHeader");
         tasksSection.getChildren().add(tasksHeader);
+
+        // Add Task button logic
+        addTaskBtn.setOnAction(e -> {
+            Label newTask = new Label("✨ New Task");
+            newTask.setStyle("-fx-font-size: 14px; -fx-text-fill: #4F6DF5; -fx-font-family: 'Segoe UI Emoji';");
+            tasksSection.getChildren().add(newTask);
+
+            // Update progress percentage dynamically
+            int taskCount = tasksSection.getChildren().size() - 1; // exclude header
+            percent.setText(taskCount * 10 + "%"); // simple demo logic
+        });
 
         mainContent.getChildren().addAll(header, statCards, tasksSection);
 
@@ -127,7 +149,7 @@ public class PlanoraDashboard extends Application {
         root.getChildren().add(layout);
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("dashboard.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/dashboard.css").toExternalForm());
 
         primaryStage.setTitle("PLANORA - Dashboard");
         primaryStage.setScene(scene);
@@ -141,6 +163,7 @@ public class PlanoraDashboard extends Application {
         item.setPadding(new Insets(0, 0, 0, 15));
         item.setAlignment(Pos.CENTER_LEFT);
         item.setId(active ? "navItemActive" : "navItem");
+        item.setStyle("-fx-font-family: 'Segoe UI Emoji';");
         return item;
     }
 
@@ -151,8 +174,11 @@ public class PlanoraDashboard extends Application {
         card.setId("statCard");
 
         Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 20px; -fx-font-family: 'Segoe UI Emoji';");
+
         Label numberLabel = new Label(number);
         numberLabel.setId("statNumber");
+
         Label textLabel = new Label(label);
         textLabel.setId("statLabel");
 
