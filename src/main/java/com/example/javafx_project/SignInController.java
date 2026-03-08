@@ -59,7 +59,7 @@ private void onLoginButtonClick() {
             Stage stage = (Stage) usernameField.getScene().getWindow();
 
             // Load your existing Dashboard
-            PlanoraDashboard dashboard = new PlanoraDashboard();
+            PlanoraDashboard dashboard = new PlanoraDashboard(user);
             dashboard.start(stage);  // reuse the same stage
 
         } catch (Exception e) {

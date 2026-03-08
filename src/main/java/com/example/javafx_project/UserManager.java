@@ -7,7 +7,7 @@ import java.util.Map;
 public class UserManager {
     private static final String DATA_FILE = "user_data.bin";
     private static Map<String, String> users = new HashMap<>();
-
+    public static String currentUser;
     static { loadData(); }
 
     public static boolean register(String username, String password) {
@@ -18,7 +18,11 @@ public class UserManager {
     }
 
     public static boolean validate(String username, String password) {
-        return password.equals(users.get(username));
+        if(password.equals(users.get(username))) {
+            currentUser = username;
+            return true;
+        }
+        return false;
     }
 
     private static void saveData() {

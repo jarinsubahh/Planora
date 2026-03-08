@@ -16,16 +16,14 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class PlanoraDashboard extends Application {
 
@@ -34,17 +32,28 @@ public class PlanoraDashboard extends Application {
     private List<Task> taskList = new ArrayList<>();
     private Label percent;
     private YearMonth currentYearMonth = YearMonth.now();
+    private String currentUser = "default"; // set from login
+    private Label todayCountLabel;
+    private Label upcomingCountLabel;
+    private Label completedCountLabel;
+    private Label streakCountLabel;
+    private Label totalCountLabel;
+
+    public PlanoraDashboard() {}
+    public PlanoraDashboard(String username) {
+        this.currentUser = username;
+    }
 
     @Override
     public void start(Stage primaryStage) {
         loadTasksFromFile();
+
         // Gradient background
         Stop[] stops = new Stop[] {
                 new Stop(0, Color.web("#f8f5f9")),
                 new Stop(1, Color.web("#f2f6f8"))
         };
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
+        LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
 
         StackPane root = new StackPane();
         root.setBackground(new Background(new BackgroundFill(gradient, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -73,6 +82,7 @@ public class PlanoraDashboard extends Application {
         Label focusItem = createNavItem("🌙 Focus Mode", false);
         Label calendarItem = createNavItem("📅 Calendar", false);
 
+        dashboardItem.setOnMouseClicked(e -> showAllTasks());
         todayItem.setOnMouseClicked(e -> showTodayTasks());
         upcomingItem.setOnMouseClicked(e -> showUpcomingTasks());
         completedItem.setOnMouseClicked(e -> showCompletedTasks());
@@ -87,6 +97,7 @@ public class PlanoraDashboard extends Application {
         Label settingsItem = createNavItem("⚙ Settings", false);
         Label logoutItem = createNavItem("🚪 Logout", false);
         logoutItem.setOnMouseClicked(e -> {
+            saveTasksToFile();
             try {
                 PlanoraLandingPage landing = new PlanoraLandingPage();
                 landing.start(primaryStage);
@@ -136,14 +147,15 @@ public class PlanoraDashboard extends Application {
         statCards.getChildren().addAll(
                 createStatCard("🌸", "0", "Today"),
                 createStatCard("⏳", "0", "Upcoming"),
-                createStatCard("🔥", "0", "Streak")
+                createStatCard("🔥", "0", "Streak"),
+                createStatCard("📋", "0", "Total")
         );
 
         // Tasks section
         tasksContainer = new VBox(15);
         tasksContainer.setPadding(new Insets(10));
         refreshTaskList();
-        saveTasksToFile();
+
         ScrollPane tasksScroll = new ScrollPane(tasksContainer);
         tasksScroll.setFitToWidth(true);
         tasksScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -238,7 +250,7 @@ public class PlanoraDashboard extends Application {
             taskList.add(newTask);
 
             refreshTaskList();
-            saveTasksToFile();
+            saveTasksToFile();   // persist immediately
             hideOverlay();
         });
 
@@ -304,24 +316,24 @@ public class PlanoraDashboard extends Application {
         for (Task task : taskList) {
             if (task.getDeadline() != null && task.getDeadline().equals(LocalDate.now())) {
                 totalToday++;
-                if (task.isCompleted()) completedToday++;
-            }
-            if (!task.isCompleted()) {
-                VBox card = createTaskCard(task);
-                tasksContainer.getChildren().add(card);
+                if (task.isCompleted()) {
+                    completedToday++;
+                } else {
+                    tasksContainer.getChildren().add(createTaskCard(task));
+                }
             }
         }
 
         int percentValue = totalToday == 0 ? 0 : (completedToday * 100 / totalToday);
         percent.setText(percentValue + "%");
+        updateStats();
     }
 
     // Task card design
     private VBox createTaskCard(Task task) {
         HBox card = new HBox();
         card.setPrefSize(520, 130);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 25; "
-                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 8);");
+        card.getStyleClass().add("task-card");
 
         Region strip = new Region();
         strip.setPrefWidth(8);
@@ -347,10 +359,16 @@ public class PlanoraDashboard extends Application {
             task.setCompleted(true);
             saveTasksToFile();
             refreshTaskList();
+            updateStats();
         });
 
         Button deleteBtn = new Button("🗑");
-        deleteBtn.setOnAction(e -> { taskList.remove(task); refreshTaskList(); });
+        deleteBtn.setOnAction(e -> {
+            taskList.remove(task);
+            saveTasksToFile();
+            refreshTaskList();
+            updateStats();
+        });
 
         HBox actionRow = new HBox(10, doneBtn, deleteBtn);
         actionRow.setAlignment(Pos.CENTER_RIGHT);
@@ -358,9 +376,6 @@ public class PlanoraDashboard extends Application {
         content.getChildren().addAll(title, desc, infoRow, actionRow);
 
         card.getChildren().addAll(strip, content);
-
-        card.setOnMouseEntered(e -> { card.setScaleX(1.02); card.setScaleY(1.02); });
-        card.setOnMouseExited(e -> { card.setScaleX(1); card.setScaleY(1); });
 
         return new VBox(card);
     }
@@ -376,10 +391,17 @@ public class PlanoraDashboard extends Application {
     }
 
     // Filtering
+    private void showAllTasks() {
+        tasksContainer.getChildren().clear();
+        for (Task task : taskList) {
+            tasksContainer.getChildren().add(createTaskCard(task));
+        }
+    }
+
     private void showTodayTasks() {
         tasksContainer.getChildren().clear();
         for (Task task : taskList) {
-            if (task.getDeadline() != null && task.getDeadline().equals(LocalDate.now())) {
+            if (!task.isCompleted() && task.getDeadline() != null && task.getDeadline().equals(LocalDate.now())) {
                 tasksContainer.getChildren().add(createTaskCard(task));
             }
         }
@@ -388,7 +410,7 @@ public class PlanoraDashboard extends Application {
     private void showUpcomingTasks() {
         tasksContainer.getChildren().clear();
         for (Task task : taskList) {
-            if (task.getDeadline() != null && task.getDeadline().isAfter(LocalDate.now())) {
+            if (!task.isCompleted() && task.getDeadline() != null && task.getDeadline().isAfter(LocalDate.now())) {
                 tasksContainer.getChildren().add(createTaskCard(task));
             }
         }
@@ -402,25 +424,12 @@ public class PlanoraDashboard extends Application {
             }
         }
     }
-    private void saveTasksToFile() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("tasks.dat"))) {
-            oos.writeObject(taskList);
-        } catch (Exception e) { e.printStackTrace(); }
-    }
 
-    @SuppressWarnings("unchecked")
-    private void loadTasksFromFile() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("tasks.dat"))) {
-            taskList = (List<Task>) ois.readObject();
-        } catch (Exception e) {
-            taskList = new ArrayList<>();
-        }
-    }
 
     private void showTasksByDate(LocalDate date) {
         tasksContainer.getChildren().clear();
         for (Task task : taskList) {
-            if (task.getDeadline() != null && task.getDeadline().equals(date)) {
+            if (!task.isCompleted() && task.getDeadline() != null && task.getDeadline().equals(date)) {
                 tasksContainer.getChildren().add(createTaskCard(task));
             }
         }
@@ -466,7 +475,8 @@ public class PlanoraDashboard extends Application {
                 dayBtn.setStyle("-fx-background-color:#C4B5FD; -fx-background-radius:15; -fx-text-fill:white;");
             }
 
-            boolean hasTasks = taskList.stream().anyMatch(t -> !t.isCompleted() && date.equals(t.getDeadline()));
+            boolean hasTasks = taskList.stream()
+                    .anyMatch(t -> !t.isCompleted() && date.equals(t.getDeadline()));
             if (hasTasks) {
                 dayBtn.setText(dayBtn.getText() + " •");
             }
@@ -485,6 +495,21 @@ public class PlanoraDashboard extends Application {
         tasksContainer.getChildren().add(calendarPane);
     }
 
+    // Persistence
+    private void saveTasksToFile() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(currentUser + "_tasks.dat"))) {
+            oos.writeObject(taskList);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadTasksFromFile() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(currentUser + "_tasks.dat"))) {
+            taskList = (List<Task>) ois.readObject();
+        } catch (Exception e) {
+            taskList = new ArrayList<>();
+        }
+    }
 
     // Utility
     private Label createNavItem(String text, boolean active) {
@@ -513,8 +538,31 @@ public class PlanoraDashboard extends Application {
         textLabel.setId("statLabel");
 
         card.getChildren().addAll(iconLabel, numberLabel, textLabel);
+
+        // keep references
+        if (label.equals("Today")) todayCountLabel = numberLabel;
+        if (label.equals("Upcoming")) upcomingCountLabel = numberLabel;
+        if (label.equals("Completed")) completedCountLabel = numberLabel;
+        if(label.equals("Streak")) streakCountLabel=numberLabel;
+        if (label.equals("Total")) totalCountLabel = numberLabel;
         return card;
     }
+    private void updateStats() {
+        long todayCount = taskList.stream().filter(t -> !t.isCompleted() && t.getDeadline() != null && t.getDeadline().equals(LocalDate.now())).count();
+
+        long upcomingCount = taskList.stream().filter(t -> !t.isCompleted() && t.getDeadline() != null && t.getDeadline().isAfter(LocalDate.now())).count();
+
+        long completedCount = taskList.stream().filter(Task::isCompleted).count();
+        long streakCount=completedCount;
+        long totalCount=taskList.size();
+
+        if (todayCountLabel != null) todayCountLabel.setText(String.valueOf(todayCount));
+        if (upcomingCountLabel != null) upcomingCountLabel.setText(String.valueOf(upcomingCount));
+        if (completedCountLabel != null) completedCountLabel.setText(String.valueOf(completedCount));
+        if(streakCountLabel != null) streakCountLabel.setText(String.valueOf(streakCount));
+        if (totalCountLabel != null) totalCountLabel.setText(String.valueOf(totalCount));
+    }
+
 
     public static void main(String[] args) {
         launch(args);
