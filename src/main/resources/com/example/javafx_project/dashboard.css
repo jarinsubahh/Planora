@@ -1,99 +1,227 @@
-/* Root */
-#sidebar {
-    -fx-background-color: #F4F1FA;
-    -fx-background-radius: 0;
+/* Dashboard Styles */
+
+.dashboard-root {
+    -fx-background-color: #F5F6FB;
+    -fx-font-family: "Poppins", "Segoe UI", "System";
 }
 
-#logoIcon {
-    -fx-font-size: 18px;
-    -fx-text-fill: #8C7BFF;
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #F0EFFA;
+    -fx-spacing: 12;
+    -fx-padding: 20;
+    -fx-alignment: top_left;
 }
-#logoText {
+
+.logo {
     -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6C63FF;
+    -fx-padding: 0 0 10 0;
+}
+
+/* Sidebar Buttons */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5A5A7A;
+    -fx-font-size: 13px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-pref-height: 35px;
+    -fx-max-width: infinity;
+    -fx-alignment: center_left;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #E8E6FA;
+    -fx-text-fill: #6C63FF;
+    -fx-transition: all 0.2s ease;
+}
+
+.sidebar-button-active {
+    -fx-background-color: #E6E3FF;
+    -fx-text-fill: #6C63FF;
+    -fx-font-weight: bold;
+}
+
+/* Center Content */
+.center-content {
+    -fx-padding: 20;
+    -fx-spacing: 15;
+}
+
+/* Header */
+.header {
+    -fx-alignment: center_left;
+    -fx-spacing: 20;
+}
+
+.greeting {
+    -fx-font-size: 22px;
     -fx-font-weight: 600;
-    -fx-text-fill: #5E4AE3;
-    -fx-letter-spacing: 1px;
+    -fx-text-fill: linear-gradient(to right, #FF7AB6, #6C8BFF);
 }
 
-/* Nav Items */
-#navItem {
-    -fx-font-size: 14px;
-    -fx-text-fill: #7B7692;
-    -fx-background-radius: 14;
-}
-#navItem:hover {
-    -fx-background-color: #ECE8FF;
-    -fx-background-radius: 14;
-    -fx-transition: all 250ms ease-in-out;
-}
-#navItemActive {
-    -fx-font-size: 14px;
-    -fx-text-fill: #5E4AE3;
-    -fx-background-color: linear-gradient(to right, #E9E4FF, #F5EEFF);
-    -fx-background-radius: 14;
-    -fx-effect: dropshadow(gaussian, rgba(140,123,255,0.3), 10, 0, 0, 0);
+.date {
+    -fx-font-size: 12px;
+    -fx-text-fill: #888888;
 }
 
-/* Main Content */
-#greetingText {
-    -fx-font-size: 26px;
-    -fx-font-weight: 600;
-    -fx-text-fill: linear-gradient(to right, #FF7AC6, #B58CFF, #6EC1FF);
-    -fx-font-family: "Poppins", "Segoe UI Emoji", "System";
-}
-#dateText {
-    -fx-font-size: 14px;
-    -fx-text-fill: #8A86A3;
+/* Progress Indicator */
+.progress-indicator {
+    -fx-progress-color: #7A73FF;
 }
 
-/* Progress Circle */
-#progressCircle {
-    -fx-stroke: linear-gradient(to right, #8C7BFF, #B8A9FF);
-    -fx-stroke-width: 6;
-    -fx-fill: transparent;
+.progress-indicator .percentage {
+    -fx-fill: #7A73FF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
-#progressText {
-    -fx-font-size: 14px;
-    -fx-font-weight: 700;
-    -fx-text-fill: #5E4AE3;
+
+.progress-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7A73FF;
 }
 
 /* Add Task Button */
-#addTaskBtn {
-       -fx-pref-width: 120;
-       -fx-pref-height: 40;
-       -fx-background-radius: 20;
-       -fx-background-color: linear-gradient(to right, #A78BFA, #F472B6);
-       -fx-text-fill: white;
-       -fx-font-size: 14px;
-       -fx-font-weight: 600;
-       -fx-cursor: hand;
-       -fx-effect: dropshadow(gaussian, rgba(167,139,250,0.4), 15, 0, 0, 4);
-       -fx-font-family: "Poppins", "Segoe UI Emoji", "System";
-       }
-
-#addTaskBtn:hover {
-       -fx-scale-x: 1.05;
-       -fx-scale-y: 1.05;
-       -fx-effect: dropshadow(gaussian, rgba(244,114,182,0.6), 20, 0, 0, 6);
-        }
-
-.calendar-button {
-    -fx-background-radius: 15;
-    -fx-background-color: transparent;
-    -fx-font-size: 14px;
+.add-task-button {
+    -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 18;
     -fx-cursor: hand;
+    -fx-pref-width: 120px;
+    -fx-pref-height: 35px;
+    -fx-effect: dropshadow(gaussian, rgba(123,115,255,0.3), 10, 0, 0, 3);
 }
-.calendar-button:hover {
-    -fx-background-color: #E9D5FF;
+
+.add-task-button:hover {
+    -fx-background-color: linear-gradient(to right, #6A63FF, #FF5FA5);
+    -fx-effect: dropshadow(gaussian, rgba(123,115,255,0.5), 15, 0, 0, 5);
 }
-.task-card {
+
+/* Stats Row */
+.stats-row {
+    -fx-alignment: center_left;
+    -fx-spacing: 40;
+}
+
+.stats-card {
+    -fx-alignment: center;
+    -fx-spacing: 5;
+}
+
+.stats-icon {
+    -fx-font-size: 24px;
+}
+
+.stats-number {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.stats-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666;
+}
+
+/* Task Container */
+.task-container {
     -fx-background-color: white;
-    -fx-background-radius: 25;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 8);
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-pref-height: 300px;
 }
-.task-card:hover {
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
+
+.task-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333;
+}
+
+/* Task Card */
+.task-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 25;
+    -fx-padding: 15;
+    -fx-pref-height: 120px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-alignment: center_left;
+    -fx-spacing: 15;
+}
+
+.task-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E2E3A;
+}
+
+.task-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666;
+}
+
+.priority-badge {
+    -fx-background-radius: 12;
+    -fx-padding: 5 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.priority-low {
+    -fx-background-color: #7DD3FC;
+}
+
+.priority-medium {
+    -fx-background-color: #FCD34D;
+}
+
+.priority-high {
+    -fx-background-color: #FB923C;
+}
+
+.priority-urgent {
+    -fx-background-color: #F472B6;
+}
+
+.task-deadline {
+    -fx-font-size: 12px;
+    -fx-text-fill: #888;
+}
+
+.done-button {
+    -fx-background-color: #7DD3FC;
+    -fx-text-fill: #0c4a6e;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 30px;
+    -fx-font-weight: 600;
+}
+
+.done-button:hover {
+    -fx-background-color: #38BDF8;
+}
+
+.delete-button {
+    -fx-background-color: #F472B6;
+    -fx-text-fill: #831843;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 30px;
+    -fx-font-weight: 600;
+}
+
+.delete-button:hover {
+    -fx-background-color: #EC4899;
 }

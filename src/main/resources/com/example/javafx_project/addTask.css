@@ -1,0 +1,138 @@
+/* Add Task Modal Styles */
+
+.modal-background {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 0);
+}
+
+/* Header */
+.header {
+    -fx-alignment: center_left;
+    -fx-spacing: 10;
+}
+
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E2E3A;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+}
+
+.close-button:hover {
+    -fx-background-color: #F0F0F0;
+    -fx-background-radius: 15;
+}
+
+.back-button {
+    -fx-background-color: #E6E3FF;
+    -fx-text-fill: #6C63FF;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 35px;
+    -fx-background-radius: 10;
+    -fx-padding: 8 12;
+}
+
+.back-button:hover {
+    -fx-background-color: #D6D1FF;
+    -fx-text-fill: #5553E6;
+}
+
+/* Field Labels */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2E2E3A;
+}
+
+/* Input Fields */
+.input-field {
+    -fx-background-color: #F3F2F8;
+    -fx-border-color: transparent;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2E2E3A;
+}
+
+.input-field:focused {
+    -fx-border-color: #6C63FF;
+    -fx-border-width: 2;
+}
+
+/* TextArea specific */
+.input-field .content {
+    -fx-background-color: #F3F2F8;
+    -fx-background-radius: 15;
+}
+
+/* Priority Buttons */
+.priority-button {
+    -fx-background-color: #EDECF6;
+    -fx-text-fill: #666;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 18;
+    -fx-cursor: hand;
+    -fx-pref-height: 35px;
+    -fx-padding: 8 16;
+}
+
+.priority-button:hover {
+    -fx-background-color: #E0DFFF;
+}
+
+.priority-button:selected {
+    -fx-font-weight: bold;
+}
+
+/* Selected Priority Colors */
+.priority-button.low-selected {
+    -fx-background-color: #CFEBD6;
+    -fx-text-fill: #2D5A3D;
+}
+
+.priority-button.medium-selected {
+    -fx-background-color: #FFF3CD;
+    -fx-text-fill: #856404;
+}
+
+.priority-button.high-selected {
+    -fx-background-color: #FFE5D6;
+    -fx-text-fill: #D9480F;
+}
+
+.priority-button.urgent-selected {
+    -fx-background-color: #F8D7DA;
+    -fx-text-fill: #721C24;
+}
+
+/* Save Task Button */
+.save-task-button {
+    -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-pref-height: 45px;
+    -fx-max-width: infinity;
+    -fx-effect: dropshadow(gaussian, rgba(123,115,255,0.3), 10, 0, 0, 3);
+}
+
+.save-task-button:hover {
+    -fx-background-color: linear-gradient(to right, #6A63FF, #FF5FA5);
+    -fx-effect: dropshadow(gaussian, rgba(123,115,255,0.5), 15, 0, 0, 5);
+}

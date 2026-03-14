@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="dashboard-root" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.DashboardController">
+   <left>
+      <VBox prefHeight="600.0" prefWidth="180.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="logo" text="✨ PLANORA" />
+            <Button onAction="#handleDashboard" styleClass="sidebar-button sidebar-button-active" text="🏠 Dashboard" />
+            <Button onAction="#handleToday" styleClass="sidebar-button" text="📅 Today" />
+            <Button onAction="#handleUpcoming" styleClass="sidebar-button" text="⏰ Upcoming" />
+            <Button onAction="#handleCompleted" styleClass="sidebar-button" text="✅ Completed" />
+            <Button onAction="#handleAnalytics" styleClass="sidebar-button" text="📊 Analytics" />
+            <Button onAction="#handleFocusMode" styleClass="sidebar-button" text="🎯 Focus Mode" />
+            <Button onAction="#handleCalendar" styleClass="sidebar-button" text="📆 Calendar" />
+            <Button onAction="#handleSettings" styleClass="sidebar-button" text="⚙️ Settings" />
+            <Button onAction="#handleLogout" styleClass="sidebar-button" text="🚪 Logout" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox fx:id="mainContent" spacing="15.0" styleClass="center-content" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header">
+               <children>
+                  <VBox>
+                     <children>
+                        <Label styleClass="greeting" text="Good Morning, Planner ❄" />
+                        <Label styleClass="date" text="2026-03-13" />
+                     </children>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                     <children>
+                        <StackPane>
+                           <children>
+                              <Circle fill="transparent" radius="27.5" stroke="#7A73FF" strokeWidth="6.0" />
+                              <Label styleClass="progress-text" text="0%" />
+                           </children>
+                        </StackPane>
+                        <Button onAction="#handleAddTask" styleClass="add-task-button" text="+ Add Task" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="80.0" styleClass="stats-row">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="119.0" spacing="10.0" styleClass="stats-card">
+                     <children>
+                        <Label styleClass="stats-icon" text="📅" />
+                        <Label fx:id="todayStatsLabel" styleClass="stats-number" text="0" />
+                        <Label styleClass="stats-label" text="Today" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="103.0" spacing="10.0" styleClass="stats-card">
+                     <children>
+                        <Label styleClass="stats-icon" text="⏰" />
+                        <Label fx:id="upcomingStatsLabel" styleClass="stats-number" text="0" />
+                        <Label styleClass="stats-label" text="Upcoming" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="104.0" spacing="10.0" styleClass="stats-card">
+                     <children>
+                        <Label styleClass="stats-icon" text="🔥" />
+                        <Label fx:id="streakStatsLabel" styleClass="stats-number" text="1" />
+                        <Label styleClass="stats-label" text="Streak" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="123.0" spacing="10.0" styleClass="stats-card">
+                     <children>
+                        <Label styleClass="stats-icon" text="📈" />
+                        <Label fx:id="totalStatsLabel" styleClass="stats-number" text="0" />
+                        <Label styleClass="stats-label" text="Total" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox spacing="10.0" styleClass="task-container">
+               <children>
+                  <Label styleClass="task-title" text="✿ Today's Tasks" />
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS">
+                     <content>
+                        <VBox fx:id="taskListVBox" spacing="10.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

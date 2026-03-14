@@ -49,26 +49,30 @@ public class SignInController {
 //            // TODO: Show error message
 //        }
 //    }
-@FXML
-private void onLoginButtonClick() {
-    String user = usernameField.getText();
-    String pass = passwordField.getText();
+    @FXML
+    private void onLoginButtonClick() {
+        String user = usernameField.getText();
+        String pass = passwordField.getText();
 
-    if (UserManager.validate(user, pass)) {
-        try {
-            Stage stage = (Stage) usernameField.getScene().getWindow();
-
-            // Load your existing Dashboard
-            PlanoraDashboard dashboard = new PlanoraDashboard(user);
-            dashboard.start(stage);  // reuse the same stage
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (user.isEmpty() || pass.isEmpty()) {
+            System.err.println("Username or password is empty");
+            return;
         }
-    } else {
-        // TODO: Show error message
+
+        if (UserManager.validate(user, pass)) {
+            try {
+                Stage stage = (Stage) usernameField.getScene().getWindow();
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/dashboard-view.fxml"));
+                Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+                stage.setScene(scene);
+            } catch (Exception e) {
+                System.err.println("Error loading dashboard: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Invalid username or password");
+        }
     }
-}
 
     @FXML
     private void goToSignUp() {

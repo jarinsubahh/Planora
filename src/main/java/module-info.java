@@ -12,6 +12,7 @@ module com.example.javafx_project {
     requires com.almasb.fxgl.all;
     requires java.prefs;
     requires java.desktop;
+    requires java.sql;
 
     opens com.example.javafx_project to javafx.fxml;
     exports com.example.javafx_project;
