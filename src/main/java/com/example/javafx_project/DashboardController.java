@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -37,6 +38,9 @@ public class DashboardController {
     private Label todayStatsLabel;
 
     @FXML
+    private Label dateLabel;
+
+    @FXML
     private Label upcomingStatsLabel;
 
     @FXML
@@ -49,11 +53,27 @@ public class DashboardController {
 
     // Calendar integration helpers
     private java.util.List<javafx.scene.Node> originalMainChildren;
+    private java.util.List<String> originalStylesheets;
 
     @FXML
     private void initialize() {
         // capture original main content children so calendar can replace and restore
         originalMainChildren = new java.util.ArrayList<>(mainContent.getChildren());
+        // Set current date in header
+        try {
+            if (dateLabel != null) {
+                dateLabel.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            } else {
+                // Fallback: lookup by style class if fx:id not set in FXML
+                try {
+                    Label df = (Label) mainContent.lookup(".date");
+                    if (df != null) {
+                        df.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    }
+                } catch (Exception ignored) {}
+            }
+        } catch (Exception ignored) {}
+        // originalStylesheets will be captured lazily in handleFocusMode
         // Load all tasks by default
         loadTasks();
         updateStatistics();
@@ -273,6 +293,21 @@ public class DashboardController {
         if (originalMainChildren == null) return;
         mainContent.getChildren().clear();
         mainContent.getChildren().addAll(originalMainChildren);
+        if (originalStylesheets != null) {
+            mainContent.getScene().getStylesheets().clear();
+            mainContent.getScene().getStylesheets().addAll(originalStylesheets);
+        }
+        // Update header date in case app has been open across days
+        try {
+            if (dateLabel != null) {
+                dateLabel.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            } else {
+                try {
+                    Label df = (Label) mainContent.lookup(".date");
+                    if (df != null) df.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                } catch (Exception ignored) {}
+            }
+        } catch (Exception ignored) {}
         // Refresh content
         loadTasks();
         updateStatistics();
@@ -281,9 +316,43 @@ public class DashboardController {
     @FXML
     private void handleFocusMode() {
         restoreOriginalMainContent();
-        // Handle Focus Mode navigation
-        System.out.println("Focus Mode clicked");
+        try {
+            if (originalStylesheets == null) {
+                originalStylesheets = new java.util.ArrayList<>(mainContent.getScene().getStylesheets());
+            }
+            // Prepare focus mode stylesheet
+            String focusCss = getClass().getResource("/com/example/javafx_project/focus-mode.css").toExternalForm();
+
+            // Load focus mode FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/focus-mode.fxml"));
+            Parent focusRoot = loader.load();
+
+            // Get controller and wire exit callback (will close stage and restore)
+            FocusModeController controller = loader.getController();
+
+            Scene focusScene = new Scene(focusRoot, 800, 600);
+            focusScene.getStylesheets().add(focusCss);
+
+            Stage focusStage = new Stage();
+            focusStage.setTitle("Focus Mode");
+            focusStage.setScene(focusScene);
+            focusStage.initModality(Modality.APPLICATION_MODAL);
+            focusStage.initOwner(mainContent.getScene().getWindow());
+            focusStage.setResizable(false);
+
+            controller.setOnExit(() -> {
+                focusStage.close();
+                // restore styles and content
+                restoreOriginalMainContent();
+            });
+
+            focusStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
 
 

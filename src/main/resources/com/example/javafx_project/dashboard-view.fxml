@@ -10,16 +10,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="dashboard-root" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.DashboardController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="dashboard-root" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.DashboardController">
    <left>
       <VBox prefHeight="600.0" prefWidth="180.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
             <Label styleClass="logo" text="✨ PLANORA" />
-            <Button onAction="#handleDashboard" styleClass="sidebar-button sidebar-button-active" text="🏠 Dashboard" />
+            <Button contentDisplay="CENTER" onAction="#handleDashboard" styleClass="sidebar-button" text="🏠 Dashboard" />
             <Button onAction="#handleToday" styleClass="sidebar-button" text="📅 Today" />
             <Button onAction="#handleUpcoming" styleClass="sidebar-button" text="⏰ Upcoming" />
             <Button onAction="#handleCompleted" styleClass="sidebar-button" text="✅ Completed" />
-            <Button onAction="#handleAnalytics" styleClass="sidebar-button" text="📊 Analytics" />
             <Button onAction="#handleFocusMode" styleClass="sidebar-button" text="🎯 Focus Mode" />
             <Button onAction="#handleCalendar" styleClass="sidebar-button" text="📆 Calendar" />
             <Button onAction="#handleSettings" styleClass="sidebar-button" text="⚙️ Settings" />
