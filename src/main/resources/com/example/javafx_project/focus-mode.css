@@ -1,0 +1,48 @@
+.focus-root {
+    -fx-background-color: linear-gradient(to bottom right, #F5F3FF, #EDE9FE);
+}
+
+.header-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #6D6AAE;
+    -fx-font-weight: bold;
+}
+
+.glass-panel {
+    -fx-background-color: rgba(255,255,255,0.3);
+    -fx-background-radius: 25;
+    -fx-padding: 25;
+}
+
+.focus-container {
+    /*-fx-background-color: rgba(255,255,255,0.25);
+    -fx-background-radius: 30;
+    -fx-padding: 20;*/
+    -fx-background-color: transparent;
+}
+
+/* TEXT */
+.timer-label {
+    -fx-font-size: 64px;
+    -fx-text-fill: #6D6AAE;
+}
+
+.task-title-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #4C4A7A;
+}
+
+/* BUTTON */
+.button {
+    -fx-background-color: #C4B5FD;
+    -fx-background-radius: 20;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #A78BFA;
+}
+.mode-toggle-selected {
+    -fx-background-color: #A78BFA;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+}

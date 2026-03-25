@@ -15,14 +15,14 @@
       <VBox prefHeight="600.0" prefWidth="180.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
             <Label styleClass="logo" text="✨ PLANORA" />
-            <Button onAction="#handleDashboard" styleClass="sidebar-button sidebar-button-active" text="🏠 Dashboard" />
-            <Button onAction="#handleToday" styleClass="sidebar-button" text="📅 Today" />
-            <Button onAction="#handleUpcoming" styleClass="sidebar-button" text="⏰ Upcoming" />
-            <Button onAction="#handleCompleted" styleClass="sidebar-button" text="✅ Completed" />
-            <Button onAction="#handleAnalytics" styleClass="sidebar-button" text="📊 Analytics" />
-            <Button onAction="#handleFocusMode" styleClass="sidebar-button" text="🎯 Focus Mode" />
-            <Button onAction="#handleCalendar" styleClass="sidebar-button" text="📆 Calendar" />
-            <Button onAction="#handleSettings" styleClass="sidebar-button" text=" 👤Space" />
+            <Button fx:id="dashboardBtn" onAction="#handleDashboard" styleClass="sidebar-button, sidebar-button-active" text="🏠 Dashboard" />
+            <Button fx:id="todayBtn" onAction="#handleToday" styleClass="sidebar-button" text="📅 Today" />
+            <Button fx:id="upcomingBtn" onAction="#handleUpcoming" styleClass="sidebar-button" text="⏰ Upcoming" />
+            <Button fx:id="completedBtn" onAction="#handleCompleted" styleClass="sidebar-button" text="✅ Completed" />
+            <Button fx:id="analyticsBtn" onAction="#handleAnalytics" styleClass="sidebar-button" text="📊 Analytics" />
+            <Button fx:id="focusBtn" onAction="#handleFocusMode" styleClass="sidebar-button" text="🎯 Focus Mode" />
+            <Button fx:id="calendarBtn" onAction="#handleCalendar" styleClass="sidebar-button" text="📆 Calendar" />
+            <Button fx:id="spaceBtn" onAction="#handleSettings" styleClass="sidebar-button" text=" 👤Space" />
             <Button onAction="#handleLogout" styleClass="sidebar-button" text="🚪 Logout" />
          </children>
       </VBox>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="focus-root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.FocusModeController">
+
+    <VBox alignment="TOP_CENTER" prefHeight="600" prefWidth="800" spacing="25">
+
+        <!-- TOP -->
+        <HBox alignment="CENTER_LEFT" prefWidth="750">
+            <Pane HBox.hgrow="ALWAYS">
+            <children>
+                  <Label layoutX="376.0" layoutY="3.0" styleClass="header-label" text="Focus Mode" />
+            </children></Pane>
+        </HBox>
+
+        <!-- SETUP -->
+        <VBox fx:id="setupPane" alignment="CENTER" prefHeight="307.0" prefWidth="800.0" spacing="15" styleClass="glass-panel">
+
+            <ComboBox fx:id="taskSelector" prefWidth="250" promptText="Select Task" />
+
+            <HBox alignment="CENTER" spacing="10">
+                <ToggleButton fx:id="rainMode" text="🌧 Rain" />
+                <ToggleButton fx:id="pianoMode" text="🌙 Night" />
+                <ToggleButton fx:id="natureMode" text="🌿 Nature" />
+            </HBox>
+
+            <ComboBox fx:id="durationBox" prefWidth="150" />
+   
+            <Button fx:id="startButton" prefHeight="25.0" prefWidth="75.0" text="Start Focus" />
+        </VBox>
+
+    </VBox>
+
+    <!-- FOCUS SESSION (overlayed as sibling so it centers on the window) -->
+    <StackPane fx:id="focusPane" maxHeight="-1" maxWidth="-1" styleClass="focus-container" visible="false">
+
+        <Pane fx:id="animationPane" mouseTransparent="true" prefHeight="600" prefWidth="800" />
+
+        <VBox alignment="CENTER" spacing="15" style="-fx-padding: 40;">
+            <Label fx:id="taskTitleLabel" styleClass="task-title-label" />
+            <Label fx:id="timerLabel" styleClass="timer-label" text="25:00" />
+            <Button fx:id="exitButton" text="Exit" />
+
+            <HBox alignment="CENTER" spacing="10">
+                <Button fx:id="pauseButton" text="Pause" />
+                <Button fx:id="resumeButton" text="Resume" />
+            </HBox>
+
+            <ToggleButton fx:id="soundToggle" text="Sound 🌿" />
+        </VBox>
+
+    </StackPane>
+</StackPane>

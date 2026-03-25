@@ -46,6 +46,12 @@ public class DashboardController {
     @FXML
     private Label totalStatsLabel;
 
+    @FXML
+    private Label greeting;
+
+    @FXML
+    private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn;
+
     private List<Task> currentTasks;
 
     // Calendar integration helpers
@@ -67,6 +73,7 @@ public class DashboardController {
     @FXML
     private void handleDashboard() {
         // If calendar view is active, restore original main content
+        setActiveButton(dashboardBtn);
         restoreOriginalMainContent();
         loadTasks();
         updateStatistics();
@@ -74,6 +81,7 @@ public class DashboardController {
 
     @FXML
     private void handleToday() {
+        setActiveButton(todayBtn);
         restoreOriginalMainContent();
         loadTodayTasks();
         updateStatistics();
@@ -81,6 +89,7 @@ public class DashboardController {
 
     @FXML
     private void handleUpcoming() {
+        setActiveButton(upcomingBtn);
         restoreOriginalMainContent();
         loadUpcomingTasks();
         updateStatistics();
@@ -88,6 +97,7 @@ public class DashboardController {
 
     @FXML
     private void handleCompleted() {
+        setActiveButton(completedBtn);
         restoreOriginalMainContent();
         loadCompletedTasks();
         updateStatistics();
@@ -95,6 +105,7 @@ public class DashboardController {
 
     @FXML
     private void handleAnalytics() {
+        setActiveButton(analyticsBtn);
         restoreOriginalMainContent();
         // Handle Analytics navigation
         System.out.println("Analytics clicked");
@@ -116,6 +127,7 @@ public class DashboardController {
 
     @FXML
     private void handleCalendar() {
+        setActiveButton(calendarBtn);
         // Always clear mainContent first to prevent duplicates
         mainContent.getChildren().clear();
 
@@ -286,15 +298,28 @@ public class DashboardController {
 
     @FXML
     private void handleFocusMode() {
+        setActiveButton(focusBtn);
         restoreOriginalMainContent();
-        // Handle Focus Mode navigation
-        System.out.println("Focus Mode clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/focus-mode.fxml"));
+            javafx.scene.Parent focusRoot = loader.load();
+            focusRoot.getStylesheets().add(getClass().getResource("/com/example/javafx_project/focus-mode.css").toExternalForm());
+
+            FocusModeController controller = loader.getController();
+            controller.setOnExit(() -> handleDashboard());
+
+            mainContent.getChildren().clear();
+            mainContent.getChildren().add(focusRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
 
     @FXML
     private void handleSettings() {
+        setActiveButton(spaceBtn);
         showSpaceList();
     }
 
@@ -745,6 +770,24 @@ public class DashboardController {
             showSpaceDetails(space); // Refresh space view
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private void setActiveButton(Button activeButton) {
+        // List of all your sidebar buttons
+        Button[] allButtons = {dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn};
+
+        // Remove the active class from all buttons
+        for (Button btn : allButtons) {
+            if (btn != null) {
+                btn.getStyleClass().remove("sidebar-button-active");
+            }
+        }
+
+        // Add the active class to the clicked button
+        if (activeButton != null) {
+            if (!activeButton.getStyleClass().contains("sidebar-button-active")) {
+                activeButton.getStyleClass().add("sidebar-button-active");
+            }
         }
     }
 }

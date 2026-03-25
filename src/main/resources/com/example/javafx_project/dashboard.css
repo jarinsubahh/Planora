@@ -40,9 +40,10 @@
 }
 
 .sidebar-button-active {
-    -fx-background-color: #E6E3FF;
-    -fx-text-fill: #6C63FF;
+    -fx-background-color: #7A73FF; /* Purple Background */
+    -fx-text-fill: white;          /* White Text */
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.6), 10, 0.2, 0, 0); /* Glow effect */
 }
 
 /* Center Content */
