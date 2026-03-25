@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Circle;
@@ -50,14 +51,18 @@ public class DashboardController {
     // Calendar integration helpers
     private java.util.List<javafx.scene.Node> originalMainChildren;
 
+    private Space currentActiveSpace = null;
+
     @FXML
     private void initialize() {
         // capture original main content children so calendar can replace and restore
         originalMainChildren = new java.util.ArrayList<>(mainContent.getChildren());
         // Load all tasks by default
+        SpaceManager.loadFromFile();
         loadTasks();
         updateStatistics();
     }
+
 
     @FXML
     private void handleDashboard() {
@@ -232,7 +237,7 @@ public class DashboardController {
             }
         }
     }
-
+   
     private void showTasksForDate(java.time.LocalDate date) {
         // Clear calendar and show task view
         calendarPageRoot.getChildren().clear();
@@ -273,6 +278,7 @@ public class DashboardController {
         if (originalMainChildren == null) return;
         mainContent.getChildren().clear();
         mainContent.getChildren().addAll(originalMainChildren);
+        currentActiveSpace = null;
         // Refresh content
         loadTasks();
         updateStatistics();
@@ -289,9 +295,7 @@ public class DashboardController {
 
     @FXML
     private void handleSettings() {
-        restoreOriginalMainContent();
-        // Handle Settings navigation
-        System.out.println("Settings clicked");
+        showSpaceList();
     }
 
     @FXML
@@ -307,7 +311,7 @@ public class DashboardController {
                 return;
             }
             Stage stage = (Stage) scene.getWindow();
-            PlanoraLandingPage landing = new PlanoraLandingPage();
+            com.example.javafx_project.PlanoraLandingPage landing = new com.example.javafx_project.PlanoraLandingPage();
             landing.start(stage);
         } catch (Exception e) {
             System.err.println("Error during logout: " + e.getMessage());
@@ -317,11 +321,19 @@ public class DashboardController {
 
     @FXML
     private void handleAddTask() {
-        restoreOriginalMainContent();
+        // Only restore if not in a space
+        if (currentActiveSpace == null) {
+            restoreOriginalMainContent();
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
             Scene scene = new Scene(loader.load(), 800, 600);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
+
+            AddTaskController controller = loader.getController();
+            if (currentActiveSpace != null) {
+                controller.setCurrentSpace(currentActiveSpace);
+            }
 
             Stage modalStage = new Stage();
             modalStage.setTitle("Add New Task");
@@ -330,8 +342,12 @@ public class DashboardController {
             modalStage.setResizable(false);
             modalStage.showAndWait();
 
-            // Refresh tasks and stats after adding
-            loadTasks();
+            if (currentActiveSpace != null) {
+                showSpaceDetails(currentActiveSpace);
+            } else {
+                loadTasks();
+            }
+
             updateStatistics();
         } catch (IOException e) {
             e.printStackTrace();
@@ -413,7 +429,15 @@ public class DashboardController {
         deleteButton.getStyleClass().add("delete-button");
         deleteButton.setOnAction(e -> deleteTask(task));
 
-        buttonBox.getChildren().addAll(doneButton, deleteButton);
+        // Only add edit button if not a synced task
+        if (!task.getTitle().contains(" [")) {
+            Button editButton = new Button("✏ Edit");
+            editButton.getStyleClass().add("add-space-btn");
+            editButton.setOnAction(e -> handleEditTask(task));
+            buttonBox.getChildren().addAll(doneButton, editButton, deleteButton);
+        } else {
+            buttonBox.getChildren().addAll(doneButton, deleteButton);
+        }
 
         taskCard.getChildren().addAll(priorityStrip, contentBox, buttonBox);
         return taskCard;
@@ -439,6 +463,31 @@ public class DashboardController {
         TaskService.deleteTask(task.getId());
         loadTasks();
         updateStatistics();
+    }
+
+    private void handleEditTask(Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
+            Scene scene = new Scene(loader.load(), 800, 600);
+            scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
+
+            AddTaskController controller = loader.getController();
+            controller.setEditMode(true);
+            controller.setTaskToEdit(task);
+            controller.setupForEdit();
+
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Edit Task");
+            modalStage.setScene(scene);
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setResizable(false);
+            modalStage.showAndWait();
+
+            loadTasks();
+            updateStatistics();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateStatistics() {
@@ -492,5 +541,210 @@ public class DashboardController {
         }
 
         return streak;
+    }
+    private VBox createSpaceCard(Space space) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("space-card");
+        card.setPrefSize(220, 140);
+        card.setAlignment(Pos.CENTER);
+        Label name = new Label(space.getSpaceName());
+        name.setStyle("-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;");
+        Label role = new Label(space.isAdmin(UserManager.currentUser) ? "ADMIN" : "MEMBER");
+        role.setStyle("-fx-text-fill: #FF6FB5; -fx-font-size: 11;");
+        card.getChildren().addAll(name, role);
+        card.setOnMouseClicked(e -> showSpaceDetails(space));
+        return card;
+    }
+    private void handleCreateSpace() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setHeaderText("Create a shared space");
+        dialog.showAndWait().ifPresent(name -> {
+            if (!name.trim().isEmpty()) {
+                SpaceManager.addSpace(new Space(name, UserManager.currentUser));
+                showSpaceList();
+            }
+        });
+    }
+    private void showSpaceList() {
+        currentActiveSpace = null; // Clear active space context
+        mainContent.getChildren().clear();
+
+        Label title = new Label("Collaborative Spaces");
+        title.getStyleClass().add("greeting");
+
+        Button addSpaceBtn = new Button("+ New Space");
+        addSpaceBtn.getStyleClass().add("add-space-btn"); // Small & Rounded via CSS
+        addSpaceBtn.setOnAction(e -> handleCreateSpace());
+
+        Button invitationsBtn = new Button("📩 Invitations");
+        invitationsBtn.getStyleClass().add("add-space-btn");
+        invitationsBtn.setOnAction(e -> showInvitations());
+
+        HBox topBar = new HBox(20, title, addSpaceBtn, invitationsBtn);
+        topBar.setAlignment(Pos.CENTER_LEFT);
+
+        FlowPane spaceGrid = new FlowPane(20, 20);
+        for (Space space : SpaceManager.getAllSpaces()) {
+            if (space.getMembers().contains(UserManager.currentUser)) {
+                VBox card = createSpaceCard(space);
+                spaceGrid.getChildren().add(card);
+            }
+        }
+
+        mainContent.getChildren().addAll(topBar, spaceGrid);
+    }
+    private HBox createSpaceSpecificCard(Task task, Space space) {
+        HBox taskCard = new HBox(15);
+        taskCard.getStyleClass().add("task-card");
+
+        // --- 1. Task Info (Title, Desc, etc) ---
+        VBox contentBox = new VBox(5);
+        Label titleLabel = new Label(task.getTitle());
+        titleLabel.getStyleClass().add("task-title");
+        Label descLabel = new Label(task.getDescription() != null ? task.getDescription() : "");
+        contentBox.getChildren().addAll(titleLabel, descLabel);
+
+        // --- 2. Button Box ---
+        VBox buttonBox = new VBox(5);
+
+        // Sync Button (Visible to EVERYONE)
+        Button syncBtn = new Button("🔄 Sync");
+        syncBtn.getStyleClass().add("add-space-btn");
+        syncBtn.setOnAction(e -> {
+            String syncedTitle = task.getTitle() + " [" + space.getSpaceName() + "]";
+            Task existing = TaskService.getTaskByTitle(UserManager.currentUser, syncedTitle);
+            if (existing != null) {
+                // Update existing synced task
+                existing.setDescription(task.getDescription());
+                existing.setPriority(task.getPriority());
+                existing.setDeadline(task.getDeadline());
+                existing.setCategory(task.getCategory());
+                TaskService.updateTask(existing);
+                new Alert(Alert.AlertType.INFORMATION, "Synced task updated in personal dashboard!").show();
+            } else {
+                // Create new synced task
+                Task syncedTask = new Task();
+                syncedTask.setUserId(UserManager.currentUser);
+                syncedTask.setTitle(syncedTitle);
+                syncedTask.setDescription(task.getDescription());
+                syncedTask.setPriority(task.getPriority());
+                syncedTask.setDeadline(task.getDeadline());
+                syncedTask.setCategory(task.getCategory());
+                syncedTask.setCompleted(false);
+                TaskService.createTask(syncedTask, UserManager.currentUser);
+                new Alert(Alert.AlertType.INFORMATION, "Task synced to personal dashboard!").show();
+            }
+            updateStatistics();
+        });
+        buttonBox.getChildren().add(syncBtn);
+
+        // Edit/Delete Buttons (Visible to ADMIN ONLY)
+        if (space.isAdmin(UserManager.currentUser)) {
+            Button editBtn = new Button("✏ Edit");
+            editBtn.getStyleClass().add("add-space-btn");
+            editBtn.setOnAction(e -> handleEditSpaceTask(task, space));
+
+            Button deleteBtn = new Button("🗑 Delete");
+            deleteBtn.getStyleClass().add("delete-button");
+            deleteBtn.setOnAction(e -> {
+                space.getSpaceTasks().remove(task);
+                SpaceManager.saveToFile();
+                showSpaceDetails(space); // Refresh UI
+            });
+
+            buttonBox.getChildren().addAll(editBtn, deleteBtn);
+        }
+
+        taskCard.getChildren().addAll(contentBox, buttonBox);
+        return taskCard;
+    }
+
+    private void showSpaceDetails(Space space) {
+        this.currentActiveSpace = space;
+        mainContent.getChildren().clear();
+
+        Label title = new Label(space.getSpaceName());
+        title.getStyleClass().add("greeting");
+
+        Button backBtn = new Button("← Back");
+        backBtn.getStyleClass().add("delete-button");
+        backBtn.setOnAction(e -> showSpaceList());
+
+        Button addTaskBtn = new Button("+ Task");
+        addTaskBtn.getStyleClass().add("add-space-btn");
+        addTaskBtn.setOnAction(e -> handleAddTask());
+
+        Button inviteBtn = new Button("👤 Invite");
+        inviteBtn.getStyleClass().add("invite-button"); // Same color as add task
+        inviteBtn.setOnAction(e -> handleInvite(space));
+
+        // ADMIN CHECK
+        boolean isAdmin = space.isAdmin(UserManager.currentUser);
+        addTaskBtn.setVisible(isAdmin);
+        inviteBtn.setVisible(isAdmin);
+
+        HBox actionHeader = new HBox(15, backBtn, title, addTaskBtn, inviteBtn);
+        actionHeader.setAlignment(Pos.CENTER_LEFT);
+
+        VBox taskArea = new VBox(15);
+        if (space.getSpaceTasks() != null) {
+            for(Task t : space.getSpaceTasks()) {
+                taskArea.getChildren().add(createSpaceSpecificCard(t, space));
+            }
+        }
+
+        mainContent.getChildren().addAll(actionHeader, taskArea);
+    }
+
+
+    private void handleInvite(Space space) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setHeaderText("Invite to " + space.getSpaceName());
+        dialog.setContentText("Username:");
+        dialog.showAndWait().ifPresent(user -> {
+            // Simple logic for BUET project: Directly add to member list
+            if (!space.getMembers().contains(user)) {
+                space.getMembers().add(user);
+                SpaceManager.saveToFile();
+                new Alert(Alert.AlertType.INFORMATION, user + " added!").show();
+            }
+        });
+    }
+
+    private void showInvitations() {
+        mainContent.getChildren().clear();
+        Button backBtn = new Button("← Back to Spaces");
+        backBtn.getStyleClass().add("add-space-btn");
+        backBtn.setOnAction(e -> showSpaceList());
+
+        Label label = new Label("Your Invitations (Coming Soon)");
+        label.setStyle("-fx-text-fill: white;");
+
+        mainContent.getChildren().addAll(backBtn, label);
+    }
+
+    private void handleEditSpaceTask(Task task, Space space) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
+            Scene scene = new Scene(loader.load(), 800, 600);
+            scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
+
+            AddTaskController controller = loader.getController();
+            controller.setCurrentSpace(space);
+            controller.setEditMode(true);
+            controller.setTaskToEdit(task);
+            controller.setupForEdit();
+
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Edit Task in " + space.getSpaceName());
+            modalStage.setScene(scene);
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setResizable(false);
+            modalStage.showAndWait();
+
+            showSpaceDetails(space); // Refresh space view
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

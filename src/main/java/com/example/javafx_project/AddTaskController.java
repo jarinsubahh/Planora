@@ -42,6 +42,40 @@ public class AddTaskController {
 
     private String selectedPriority = "Low"; // Default
 
+    private Space currentSpace = null;
+
+    private boolean isEditMode = false;
+    private Task taskToEdit = null;
+
+    public void setCurrentSpace(Space space) {
+        this.currentSpace = space;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.isEditMode = editMode;
+    }
+
+    public void setTaskToEdit(Task task) {
+        this.taskToEdit = task;
+    }
+
+    public void setupForEdit() {
+        if (isEditMode && taskToEdit != null) {
+            titleField.setText(taskToEdit.getTitle());
+            descriptionArea.setText(taskToEdit.getDescription());
+            deadlinePicker.setValue(taskToEdit.getDeadline());
+            categoryComboBox.setValue(taskToEdit.getCategory());
+            // Set priority
+            String priority = taskToEdit.getPriority();
+            switch (priority.toLowerCase()) {
+                case "low" -> selectPriorityButton(lowButton, "Low");
+                case "medium" -> selectPriorityButton(mediumButton, "Medium");
+                case "high" -> selectPriorityButton(highButton, "High");
+                case "urgent" -> selectPriorityButton(urgentButton, "Urgent");
+            }
+        }
+    }
+
     @FXML
     private void initialize() {
         // Set default priority
@@ -88,15 +122,37 @@ public class AddTaskController {
         }
 
         Task task = new Task();
-        task.setUserId(UserManager.currentUser);
+        if (isEditMode && taskToEdit != null) {
+            task.setId(taskToEdit.getId());
+            task.setUserId(taskToEdit.getUserId());
+            task.setCompleted(taskToEdit.isCompleted());
+            task.setCreatedAt(taskToEdit.getCreatedAt());
+        } else {
+            task.setUserId(UserManager.currentUser);
+            task.setCompleted(false);
+        }
         task.setTitle(titleField.getText().trim());
         task.setDescription(descriptionArea.getText().trim());
         task.setDeadline(deadlinePicker.getValue());
         task.setCategory(categoryComboBox.getValue());
         task.setPriority(selectedPriority);
-        task.setCompleted(false);
 
-        TaskService.createTask(task);
+        if (isEditMode) {
+            if (currentSpace != null) {
+                currentSpace.getSpaceTasks().remove(taskToEdit);
+                currentSpace.getSpaceTasks().add(task);
+                SpaceManager.saveToFile();
+            } else {
+                TaskService.updateTask(task);
+            }
+        } else {
+            if (currentSpace != null) {
+                currentSpace.getSpaceTasks().add(task);
+                SpaceManager.saveToFile();
+            } else {
+                TaskService.createTask(task, UserManager.currentUser);
+            }
+        }
 
         // Close the modal
         closeWindow();

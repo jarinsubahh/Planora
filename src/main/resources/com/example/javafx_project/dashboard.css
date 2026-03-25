@@ -225,3 +225,55 @@
 .delete-button:hover {
     -fx-background-color: #EC4899;
 }
+/* Add to dashboard.css */
+.space-action-button {
+    -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);
+    -fx-text-fill: white;
+    -fx-background-radius: 20; /* Rounder corners */
+    -fx-padding: 5 15;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.invite-button {
+    -fx-background-color: #2ECC71; /* Distinct green for invitations */
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 5 15;
+}
+
+/* Transparent Pink-Purple Glow Card */
+.space-card {
+    -fx-background-color: rgba(123, 115, 255, 0.15);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(255, 111, 181, 0.3), 15, 0, 0, 0);
+}
+
+.space-card:hover {
+    -fx-background-color: rgba(123, 115, 255, 0.25);
+    -fx-effect: dropshadow(gaussian, #FF6FB5, 20, 0, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Rounded Glowy Buttons */
+.add-space-btn {
+    -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);
+    -fx-background-radius: 25;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+    -fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.4), 10, 0, 0, 2);
+}
+
+.invite-button {
+    -fx-background-color: #2ECC71;
+    -fx-background-radius: 25;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+}

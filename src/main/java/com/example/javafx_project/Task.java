@@ -2,8 +2,9 @@ package com.example.javafx_project;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
-public class Task {
+public class Task implements Serializable {
     private int id;
     private String userId;
     private String title;
@@ -27,6 +28,17 @@ public class Task {
         this.priority = priority;
         this.completed = completed;
         this.createdAt = createdAt;
+    }
+
+    // Add this constructor to Task.java
+    public Task(String title, String description, String priority, LocalDate deadline) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.deadline = deadline;
+        this.completed = false; // New tasks are not completed by default
+        this.id = (int) (System.currentTimeMillis() % 1000000000L);//edited so that explicitly becomes int
+        this.createdAt = java.time.LocalDateTime.now();
     }
 
     // Getters and setters

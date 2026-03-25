@@ -11,7 +11,7 @@ public class TaskService {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static void createTask(Task task) {
+    public static void createTask(Task task, String currentUser) {
         String sql = """
             INSERT INTO tasks (user_id, title, description, deadline, category, priority, completed)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -33,7 +33,7 @@ public class TaskService {
 
     public static List<Task> getTasksByUser(String userId) {
         List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC";
+        String sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY task_id DESC";
 
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setString(1, userId);
@@ -66,7 +66,7 @@ public class TaskService {
 
     public static List<Task> getTodayTasks(String userId) {
         String today = LocalDate.now().format(DATE_FORMAT);
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND deadline = ? AND completed = 0 ORDER BY created_at DESC";
+        String sql = "SELECT * FROM tasks WHERE user_id = ? AND deadline = ? AND completed = 0 ORDER BY task_id DESC";
         return getTasksFromQuery(sql, userId, today);
     }
 
@@ -77,7 +77,7 @@ public class TaskService {
     }
 
     public static List<Task> getCompletedTasks(String userId) {
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND completed = 1 ORDER BY created_at DESC";
+        String sql = "SELECT * FROM tasks WHERE user_id = ? AND completed = 1 ORDER BY task_id DESC";
         return getTasksFromQuery(sql, userId, null);
     }
 
@@ -97,6 +97,22 @@ public class TaskService {
 
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, taskId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateTask(Task task) {
+        String sql = "UPDATE tasks SET title = ?, description = ?, deadline = ?, category = ?, priority = ? WHERE task_id = ?";
+
+        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, task.getTitle());
+            pstmt.setString(2, task.getDescription());
+            pstmt.setString(3, task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null);
+            pstmt.setString(4, task.getCategory());
+            pstmt.setString(5, task.getPriority());
+            pstmt.setInt(6, task.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,5 +155,20 @@ public class TaskService {
             e.printStackTrace();
         }
         return tasks;
+    }
+
+    public static Task getTaskByTitle(String userId, String title) {
+        String sql = "SELECT * FROM tasks WHERE user_id = ? AND title = ?";
+        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, title);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToTask(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

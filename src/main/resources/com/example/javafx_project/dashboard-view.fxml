@@ -22,7 +22,7 @@
             <Button onAction="#handleAnalytics" styleClass="sidebar-button" text="📊 Analytics" />
             <Button onAction="#handleFocusMode" styleClass="sidebar-button" text="🎯 Focus Mode" />
             <Button onAction="#handleCalendar" styleClass="sidebar-button" text="📆 Calendar" />
-            <Button onAction="#handleSettings" styleClass="sidebar-button" text="⚙️ Settings" />
+            <Button onAction="#handleSettings" styleClass="sidebar-button" text=" 👤Space" />
             <Button onAction="#handleLogout" styleClass="sidebar-button" text="🚪 Logout" />
          </children>
       </VBox>
