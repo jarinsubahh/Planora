@@ -8,25 +8,30 @@ import java.util.Map;
 public class UserManager {
     public static String currentUser;
 
-    // We no longer need the local Map or the .bin file
-    public static boolean register(String username, String password) {
+    public enum RegistrationResult {
+        SUCCESS,
+        USERNAME_TAKEN,
+        DATABASE_ERROR
+    }
+
+    public static RegistrationResult register(String username, String password, String email) {
         try {
-            // Check Cloud to see if username is taken
             Document existing = DatabaseManager.getUsersCollection()
                     .find(Filters.eq("username", username)).first();
 
             if (existing != null) {
-                return false; // User already exists
+                return RegistrationResult.USERNAME_TAKEN;
             }
 
-            // Insert new user into Cloud
             Document newUser = new Document("username", username)
-                    .append("password", password);
+                    .append("password", password)
+                    .append("email", email);
             DatabaseManager.getUsersCollection().insertOne(newUser);
-            return true;
+            return RegistrationResult.SUCCESS;
         } catch (Exception e) {
+            System.err.println("User registration failed: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            return RegistrationResult.DATABASE_ERROR;
         }
     }
 
