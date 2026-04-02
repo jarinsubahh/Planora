@@ -220,7 +220,7 @@ public class DashboardController {
         String[] days = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
         for (int i = 0; i < 7; i++) {
             Label l = new Label(days[i]);
-            l.setStyle("-fx-font-weight: 600; -fx-text-fill: #666;");
+            l.getStyleClass().add("calendar-weekday-label");
             calendarGrid.add(l, i, 0);
             GridPane.setHalignment(l, javafx.geometry.HPos.CENTER);
         }
@@ -246,12 +246,12 @@ public class DashboardController {
 
                     StackPane dateCell = new StackPane();
                     dateCell.setPrefSize(80, 80);
-                    dateCell.setStyle("-fx-background-color: #F8F8FF; -fx-background-radius: 20; -fx-border-radius: 20;");
+                    dateCell.getStyleClass().add("calendar-date-cell");
 
                     VBox content = new VBox(6);
                     content.setAlignment(Pos.CENTER);
                     Label dayLabel = new Label(String.valueOf(day));
-                    dayLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #2E2E3A;");
+                    dayLabel.getStyleClass().add("calendar-day-number");
 
                     if (hasTaskOnDate(date)) {
                         Circle dot = new Circle(3, javafx.scene.paint.Color.web("#7A73FF"));
@@ -261,10 +261,6 @@ public class DashboardController {
                     }
 
                     dateCell.getChildren().add(content);
-
-                    // Hover effect
-                    dateCell.setOnMouseEntered(ev -> dateCell.setStyle("-fx-background-color: #EFEFFF; -fx-background-radius: 20;"));
-                    dateCell.setOnMouseExited(ev -> dateCell.setStyle("-fx-background-color: #F8F8FF; -fx-background-radius: 20;"));
 
                     // Click -> show tasks for this date (replace calendar)
                     dateCell.setOnMouseClicked(ev -> showTasksForDate(date));

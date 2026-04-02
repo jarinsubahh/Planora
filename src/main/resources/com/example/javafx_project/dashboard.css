@@ -278,3 +278,32 @@
     -fx-font-weight: bold;
     -fx-padding: 8 18;
 }
+
+/* Calendar (month navigation + grid) */
+.calendar-month-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E2E3A;
+}
+
+.calendar-weekday-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555555;
+}
+
+.calendar-day-number {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E2E3A;
+}
+
+.calendar-date-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.calendar-date-cell:hover {
+    -fx-background-color: #F0EEF8;
+}
