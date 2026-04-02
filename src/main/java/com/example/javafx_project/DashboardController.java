@@ -24,6 +24,8 @@ import java.time.YearMonth;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.List;
 
 public class DashboardController {
@@ -50,6 +52,12 @@ public class DashboardController {
     private Label greeting;
 
     @FXML
+    private Label headerDateLabel;
+
+    @FXML
+    private Label taskSectionTitleLabel;
+
+    @FXML
     private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn;
 
     private List<Task> currentTasks;
@@ -63,10 +71,25 @@ public class DashboardController {
     private void initialize() {
         // capture original main content children so calendar can replace and restore
         originalMainChildren = new java.util.ArrayList<>(mainContent.getChildren());
+        updateHeaderDate();
         // Load all tasks by default
         SpaceManager.loadFromFile();
+        setTaskSectionHeading("✿ Today's Tasks");
         loadTasks();
         updateStatistics();
+    }
+
+    private void updateHeaderDate() {
+        if (headerDateLabel != null) {
+            headerDateLabel.setText(LocalDate.now().format(
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(Locale.ENGLISH)));
+        }
+    }
+
+    private void setTaskSectionHeading(String heading) {
+        if (taskSectionTitleLabel != null) {
+            taskSectionTitleLabel.setText(heading);
+        }
     }
 
 
@@ -83,6 +106,7 @@ public class DashboardController {
     private void handleToday() {
         setActiveButton(todayBtn);
         restoreOriginalMainContent();
+        setTaskSectionHeading("✿ Today's Tasks");
         loadTodayTasks();
         updateStatistics();
     }
@@ -91,6 +115,7 @@ public class DashboardController {
     private void handleUpcoming() {
         setActiveButton(upcomingBtn);
         restoreOriginalMainContent();
+        setTaskSectionHeading("✿ Upcoming Task");
         loadUpcomingTasks();
         updateStatistics();
     }
@@ -99,6 +124,7 @@ public class DashboardController {
     private void handleCompleted() {
         setActiveButton(completedBtn);
         restoreOriginalMainContent();
+        setTaskSectionHeading("✿ Completed Task");
         loadCompletedTasks();
         updateStatistics();
     }
@@ -291,6 +317,8 @@ public class DashboardController {
         mainContent.getChildren().clear();
         mainContent.getChildren().addAll(originalMainChildren);
         currentActiveSpace = null;
+        updateHeaderDate();
+        setTaskSectionHeading("✿ Today's Tasks");
         // Refresh content
         loadTasks();
         updateStatistics();
