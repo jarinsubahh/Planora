@@ -101,6 +101,13 @@ public class DatabaseManager {
     }
 
     /**
+     * Helper method to get the Invitations collection.
+     */
+    public static MongoCollection<Document> getInvitationsCollection() {
+        return getDatabase().getCollection("invitations");
+    }
+
+    /**
      * Save a space to MongoDB
      */
     public static void saveSpace(Space space) {
@@ -151,6 +158,24 @@ public class DatabaseManager {
             System.err.println("Error retrieving spaces from MongoDB: " + e.getMessage());
         }
         return spaces;
+    }
+
+    /**
+     * Delete a space from MongoDB
+     */
+    public static void deleteSpace(String spaceName) {
+        if (!isConnected()) {
+            System.err.println("MongoDB not connected. Cannot delete space.");
+            return;
+        }
+
+        try {
+            MongoCollection<Document> spacesCollection = getSpacesCollection();
+            spacesCollection.deleteOne(new Document("spaceName", spaceName));
+            System.out.println("Space deleted from MongoDB: " + spaceName);
+        } catch (Exception e) {
+            System.err.println("Error deleting space from MongoDB: " + e.getMessage());
+        }
     }
 
     /**

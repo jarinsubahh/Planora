@@ -702,7 +702,7 @@ public class DashboardController {
         addTaskBtn.setOnAction(e -> handleAddTask());
 
         Button inviteBtn = new Button("👤 Invite");
-        inviteBtn.getStyleClass().add("invite-button"); // Same color as add task
+        inviteBtn.getStyleClass().add("invite-button");
         inviteBtn.setOnAction(e -> handleInvite(space));
 
         // ADMIN CHECK
@@ -711,6 +711,24 @@ public class DashboardController {
         inviteBtn.setVisible(isAdmin);
 
         HBox actionHeader = new HBox(15, backBtn, title, addTaskBtn, inviteBtn);
+        
+        // Add delete button for admin only
+        if (isAdmin) {
+            Button deleteSpaceBtn = new Button("🗑 Delete Space");
+            deleteSpaceBtn.setStyle(
+                "-fx-background-color: rgba(244, 67, 54, 0.8);" +
+                "-fx-text-fill: white;" +
+                "-fx-padding: 8 15;" +
+                "-fx-font-size: 12;" +
+                "-fx-font-weight: bold;" +
+                "-fx-background-radius: 15;" +
+                "-fx-cursor: hand;" +
+                "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
+            );
+            deleteSpaceBtn.setOnAction(e -> handleDeleteSpace(space));
+            actionHeader.getChildren().add(deleteSpaceBtn);
+        }
+        
         actionHeader.setAlignment(Pos.CENTER_LEFT);
 
         VBox taskArea = new VBox(15);
@@ -728,26 +746,133 @@ public class DashboardController {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setHeaderText("Invite to " + space.getSpaceName());
         dialog.setContentText("Username:");
-        dialog.showAndWait().ifPresent(user -> {
-            // Simple logic for BUET project: Directly add to member list
-            if (!space.getMembers().contains(user)) {
-                space.getMembers().add(user);
-                SpaceManager.saveToFile();
-                new Alert(Alert.AlertType.INFORMATION, user + " added!").show();
+        dialog.showAndWait().ifPresent(username -> {
+            if (username.trim().isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Username cannot be empty!").show();
+                return;
             }
+
+            // Create invitation in MongoDB
+            InvitationManager.createInvitation(space.getSpaceName(), username.trim(), UserManager.currentUser);
+            new Alert(Alert.AlertType.INFORMATION, "Invitation sent to " + username + "!").show();
         });
+    }
+
+    private void handleDeleteSpace(Space space) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Delete Space");
+        confirmAlert.setHeaderText("Delete \"" + space.getSpaceName() + "\"?");
+        confirmAlert.setContentText("This action cannot be undone. All space members will lose access.");
+        
+        if (confirmAlert.showAndWait().get() == ButtonType.OK) {
+            SpaceManager.deleteSpace(space.getSpaceName());
+            new Alert(Alert.AlertType.INFORMATION, "Space deleted successfully!").show();
+            showSpaceList();
+        }
     }
 
     private void showInvitations() {
         mainContent.getChildren().clear();
+        
+        Label title = new Label("Your Invitations");
+        title.getStyleClass().add("greeting");
+
         Button backBtn = new Button("← Back to Spaces");
         backBtn.getStyleClass().add("add-space-btn");
         backBtn.setOnAction(e -> showSpaceList());
 
-        Label label = new Label("Your Invitations (Coming Soon)");
-        label.setStyle("-fx-text-fill: white;");
+        HBox topBar = new HBox(20, title, backBtn);
+        topBar.setAlignment(Pos.CENTER_LEFT);
 
-        mainContent.getChildren().addAll(backBtn, label);
+        // Fetch pending invitations for current user
+        List<Invitation> invitations = InvitationManager.getPendingInvitations(UserManager.currentUser);
+
+        VBox invitationsList = new VBox(15);
+        invitationsList.setPadding(new Insets(20));
+
+        if (invitations.isEmpty()) {
+            Label noInvitationsLabel = new Label("No pending invitations");
+            noInvitationsLabel.setStyle("-fx-text-fill: #999; -fx-font-size: 14; -fx-padding: 40;");
+            invitationsList.getChildren().add(noInvitationsLabel);
+        } else {
+            for (Invitation invitation : invitations) {
+                VBox invCard = createInvitationCard(invitation);
+                invitationsList.getChildren().add(invCard);
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(invitationsList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-control-inner-background: transparent; -fx-padding: 0;");
+
+        mainContent.getChildren().addAll(topBar, scrollPane);
+    }
+
+    private VBox createInvitationCard(Invitation invitation) {
+        VBox card = new VBox(10);
+        card.setStyle(
+            "-fx-background-color: rgba(123, 115, 255, 0.15);" +
+            "-fx-border-color: rgba(255, 255, 255, 0.3);" +
+            "-fx-border-radius: 20;" +
+            "-fx-background-radius: 20;" +
+            "-fx-padding: 20;" +
+            "-fx-border-width: 1;" +
+            "-fx-effect: dropshadow(gaussian, rgba(255, 111, 181, 0.3), 15, 0, 0, 0);"
+        );
+        card.setPrefWidth(550);
+
+        Label spaceName = new Label("🚀 " + invitation.spaceName);
+        spaceName.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #FFF; -fx-padding: 0 0 5 0;");
+
+        Label senderLabel = new Label("📨 Invited by: " + invitation.senderUsername);
+        senderLabel.setStyle("-fx-font-size: 13; -fx-text-fill: rgba(255, 255, 255, 0.8); -fx-padding: 0 0 3 0;");
+
+        Label dateLabel = new Label("📅 " + invitation.createdAt);
+        dateLabel.setStyle("-fx-font-size: 12; -fx-text-fill: rgba(255, 255, 255, 0.6);");
+
+        HBox buttonBox = new HBox(12);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+
+        Button acceptBtn = new Button("✓ Accept");
+        acceptBtn.setStyle(
+            "-fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);" +
+            "-fx-text-fill: white;" +
+            "-fx-padding: 10 25;" +
+            "-fx-font-size: 13;" +
+            "-fx-font-weight: bold;" +
+            "-fx-background-radius: 20;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.5), 10, 0, 0, 2);"
+        );
+        acceptBtn.setOnAction(e -> {
+            InvitationManager.acceptInvitation(invitation.spaceName, UserManager.currentUser);
+            SpaceManager.loadSpacesFromMongoDB();
+            new Alert(Alert.AlertType.INFORMATION, "🎉 You joined " + invitation.spaceName + "!").show();
+            showInvitations();
+        });
+
+        Button declineBtn = new Button("✗ Decline");
+        declineBtn.setStyle(
+            "-fx-background-color: rgba(244, 67, 54, 0.8);" +
+            "-fx-text-fill: white;" +
+            "-fx-padding: 10 25;" +
+            "-fx-font-size: 13;" +
+            "-fx-font-weight: bold;" +
+            "-fx-background-radius: 20;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
+        );
+        declineBtn.setOnAction(e -> {
+            InvitationManager.declineInvitation(invitation.spaceName, UserManager.currentUser);
+            new Alert(Alert.AlertType.INFORMATION, "Invitation declined.").show();
+            showInvitations();
+        });
+
+        buttonBox.getChildren().addAll(acceptBtn, declineBtn);
+
+        card.getChildren().addAll(spaceName, senderLabel, dateLabel, buttonBox);
+        return card;
     }
 
     private void handleEditSpaceTask(Task task, Space space) {
