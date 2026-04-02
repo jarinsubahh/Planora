@@ -479,13 +479,15 @@ public class DashboardController {
     }
 
     private void markTaskDone(Task task) {
-        TaskService.markCompleted(task.getId());
+        // We now pass the Task Title and the current logged-in username
+        TaskService.markCompleted(task.getTitle(), UserManager.currentUser);
         loadTasks();
         updateStatistics();
     }
 
     private void deleteTask(Task task) {
-        TaskService.deleteTask(task.getId());
+        // Change from task.getId() to title and currentUser
+        TaskService.deleteTask(task.getTitle(), UserManager.currentUser);
         loadTasks();
         updateStatistics();
     }

@@ -27,28 +27,7 @@ public class SignInController {
         landing.start(stage);
     }
 
-//    @FXML
-//    private void onLoginButtonClick() {
-//        String user = usernameField.getText();
-//        String pass = passwordField.getText();
-//
-//        if (UserManager.validate(user, pass)) {
-//            Stage currentStage = (Stage) usernameField.getScene().getWindow();
-//
-//            Label loggedInLabel = new Label("Logged in");
-//            StackPane loggedInRoot = new StackPane(loggedInLabel);
-//            Scene loggedInScene = new Scene(loggedInRoot, 800, 600);
-//
-//            Stage loggedInStage = new Stage();
-//            loggedInStage.setTitle("Planora - Logged In");
-//            loggedInStage.setScene(loggedInScene);
-//            loggedInStage.show();
-//
-//            currentStage.close();
-//        } else {
-//            // TODO: Show error message
-//        }
-//    }
+
     @FXML
     private void onLoginButtonClick() {
         String user = usernameField.getText();

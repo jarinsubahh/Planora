@@ -14,6 +14,11 @@ module com.example.javafx_project {
     requires java.prefs;
     requires java.desktop;
     requires java.sql;
+    // MongoDB Modules
+    requires org.mongodb.driver.sync.client;
+    requires org.mongodb.bson;
+    requires org.mongodb.driver.core;
+
 
     opens com.example.javafx_project to javafx.fxml;
     exports com.example.javafx_project;

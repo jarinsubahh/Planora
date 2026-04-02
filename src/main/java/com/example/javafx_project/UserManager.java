@@ -1,62 +1,59 @@
 package com.example.javafx_project;
 
-import java.io.*;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    private static final String DATA_FILE = "user_data.bin";
-    private static Map<String, String> users = new HashMap<>();
     public static String currentUser;
-    static { 
-        loadData();
-        try {
-            DatabaseManager.migrateUsers();
-        } catch (Exception e) {
-            System.err.println("Error during UserManager initialization: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
+    // We no longer need the local Map or the .bin file
     public static boolean register(String username, String password) {
-        if (users.containsKey(username)) return false;
-        users.put(username, password);
-        saveData();
-        return true;
+        try {
+            // Check Cloud to see if username is taken
+            Document existing = DatabaseManager.getUsersCollection()
+                    .find(Filters.eq("username", username)).first();
+
+            if (existing != null) {
+                return false; // User already exists
+            }
+
+            // Insert new user into Cloud
+            Document newUser = new Document("username", username)
+                    .append("password", password);
+            DatabaseManager.getUsersCollection().insertOne(newUser);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean validate(String username, String password) {
-        if (username == null || password == null) {
-            return false;
-        }
-        String storedPassword = users.get(username);
-        if (storedPassword != null && storedPassword.equals(password)) {
-            currentUser = username;
-            return true;
+        if (username == null || password == null) return false;
+
+        try {
+            // Find user in Cloud
+            Document user = DatabaseManager.getUsersCollection()
+                    .find(Filters.eq("username", username)).first();
+
+            if (user != null && user.getString("password").equals(password)) {
+                currentUser = username;
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
-    }
-
-    public static Map<String, String> getUsers() {
-        return users;
     }
 
     public static void logout() {
         currentUser = null;
     }
 
-    private static void saveData() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(users);
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private static void loadData() {
-        File file = new File(DATA_FILE);
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                users = (Map<String, String>) ois.readObject();
-            } catch (Exception e) { users = new HashMap<>(); }
-        }
+    // Keep this empty or remove calls to it to stop using local files
+    public static Map<String, String> getUsers() {
+        return new HashMap<>();
     }
 }

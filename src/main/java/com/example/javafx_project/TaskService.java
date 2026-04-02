@@ -1,6 +1,12 @@
 package com.example.javafx_project;
 
-import java.sql.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,164 +17,116 @@ public class TaskService {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static void createTask(Task task, String currentUser) {
-        String sql = """
-            INSERT INTO tasks (user_id, title, description, deadline, category, priority, completed)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """;
+    private static MongoCollection<Document> getCollection() {
+        return DatabaseManager.getTasksCollection();
+    }
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, task.getUserId());
-            pstmt.setString(2, task.getTitle());
-            pstmt.setString(3, task.getDescription());
-            pstmt.setString(4, task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null);
-            pstmt.setString(5, task.getCategory());
-            pstmt.setString(6, task.getPriority());
-            pstmt.setInt(7, task.isCompleted() ? 1 : 0);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public static void createTask(Task task, String currentUser) {
+        Document doc = new Document("user_id", task.getUserId())
+                .append("title", task.getTitle())
+                .append("description", task.getDescription())
+                .append("deadline", task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null)
+                .append("category", task.getCategory())
+                .append("priority", task.getPriority())
+                .append("completed", task.isCompleted())
+                .append("created_at", LocalDateTime.now().format(DATETIME_FORMAT));
+
+        getCollection().insertOne(doc);
     }
 
     public static List<Task> getTasksByUser(String userId) {
         List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY task_id DESC";
+        Bson filter = Filters.eq("user_id", userId);
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                Task task = new Task();
-                task.setId(rs.getInt("task_id"));
-                task.setUserId(rs.getString("user_id"));
-                task.setTitle(rs.getString("title"));
-                task.setDescription(rs.getString("description"));
-                String deadlineStr = rs.getString("deadline");
-                if (deadlineStr != null) {
-                    task.setDeadline(LocalDate.parse(deadlineStr, DATE_FORMAT));
-                }
-                task.setCategory(rs.getString("category"));
-                task.setPriority(rs.getString("priority"));
-                task.setCompleted(rs.getInt("completed") == 1);
-                String createdAtStr = rs.getString("created_at");
-                if (createdAtStr != null) {
-                    task.setCreatedAt(LocalDateTime.parse(createdAtStr, DATETIME_FORMAT));
-                }
-                tasks.add(task);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (Document doc : getCollection().find(filter).sort(Sorts.descending("_id"))) {
+            tasks.add(mapDocumentToTask(doc));
         }
         return tasks;
     }
 
     public static List<Task> getTodayTasks(String userId) {
         String today = LocalDate.now().format(DATE_FORMAT);
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND deadline = ? AND completed = 0 ORDER BY task_id DESC";
-        return getTasksFromQuery(sql, userId, today);
+        Bson filter = Filters.and(
+                Filters.eq("user_id", userId),
+                Filters.eq("deadline", today),
+                Filters.eq("completed", false)
+        );
+        return getTasksFromFilter(filter);
     }
 
     public static List<Task> getUpcomingTasks(String userId) {
         String today = LocalDate.now().format(DATE_FORMAT);
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND deadline > ? AND completed = 0 ORDER BY deadline ASC";
-        return getTasksFromQuery(sql, userId, today);
+        Bson filter = Filters.and(
+                Filters.eq("user_id", userId),
+                Filters.gt("deadline", today),
+                Filters.eq("completed", false)
+        );
+        return getTasksFromFilter(filter);
     }
 
     public static List<Task> getCompletedTasks(String userId) {
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND completed = 1 ORDER BY task_id DESC";
-        return getTasksFromQuery(sql, userId, null);
+        Bson filter = Filters.and(
+                Filters.eq("user_id", userId),
+                Filters.eq("completed", true)
+        );
+        return getTasksFromFilter(filter);
+    }
+    public static Task getTaskByTitle(String userId, String title) {
+        Bson filter = Filters.and(Filters.eq("user_id", userId), Filters.eq("title", title));
+        Document doc = DatabaseManager.getTasksCollection().find(filter).first();
+        return (doc != null) ? mapDocumentToTask(doc) : null;
     }
 
-    public static void markCompleted(int taskId) {
-        String sql = "UPDATE tasks SET completed = 1 WHERE task_id = ?";
-
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, taskId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public static void markCompleted(String title, String userId) {
+        Bson filter = Filters.and(Filters.eq("title", title), Filters.eq("user_id", userId));
+        getCollection().updateOne(filter, Updates.set("completed", true));
     }
 
-    public static void deleteTask(int taskId) {
-        String sql = "DELETE FROM tasks WHERE task_id = ?";
-
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, taskId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public static void deleteTask(String title, String userId) {
+        Bson filter = Filters.and(Filters.eq("title", title), Filters.eq("user_id", userId));
+        getCollection().deleteOne(filter);
     }
 
     public static void updateTask(Task task) {
-        String sql = "UPDATE tasks SET title = ?, description = ?, deadline = ?, category = ?, priority = ? WHERE task_id = ?";
+        Bson filter = Filters.and(
+                Filters.eq("title", task.getTitle()),
+                Filters.eq("user_id", task.getUserId())
+        );
 
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, task.getTitle());
-            pstmt.setString(2, task.getDescription());
-            pstmt.setString(3, task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null);
-            pstmt.setString(4, task.getCategory());
-            pstmt.setString(5, task.getPriority());
-            pstmt.setInt(6, task.getId());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Bson update = Updates.combine(
+                Updates.set("description", task.getDescription()),
+                Updates.set("deadline", task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null),
+                Updates.set("category", task.getCategory()),
+                Updates.set("priority", task.getPriority())
+        );
+
+        getCollection().updateOne(filter, update);
     }
 
-    private static Task mapResultSetToTask(ResultSet rs) throws SQLException {
+    private static Task mapDocumentToTask(Document doc) {
         Task task = new Task();
-        task.setId(rs.getInt("task_id"));
-        task.setUserId(rs.getString("user_id"));
-        task.setTitle(rs.getString("title"));
-        task.setDescription(rs.getString("description"));
-        String deadlineStr = rs.getString("deadline");
-        if (deadlineStr != null) {
+        task.setUserId(doc.getString("user_id"));
+        task.setTitle(doc.getString("title"));
+        task.setDescription(doc.getString("description"));
+        String deadlineStr = doc.getString("deadline");
+        if (deadlineStr != null && !deadlineStr.isEmpty()) {
             task.setDeadline(LocalDate.parse(deadlineStr, DATE_FORMAT));
         }
-        task.setCategory(rs.getString("category"));
-        task.setPriority(rs.getString("priority"));
-        task.setCompleted(rs.getInt("completed") == 1);
-        String createdAtStr = rs.getString("created_at");
+        task.setCategory(doc.getString("category"));
+        task.setPriority(doc.getString("priority"));
+        task.setCompleted(doc.getBoolean("completed", false));
+        String createdAtStr = doc.getString("created_at");
         if (createdAtStr != null) {
             task.setCreatedAt(LocalDateTime.parse(createdAtStr, DATETIME_FORMAT));
         }
         return task;
     }
 
-    private static List<Task> getTasksFromQuery(String sql, String userId, String param) {
+    private static List<Task> getTasksFromFilter(Bson filter) {
         List<Task> tasks = new ArrayList<>();
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, userId);
-            if (param != null) {
-                pstmt.setString(2, param);
-            }
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Task task = mapResultSetToTask(rs);
-                tasks.add(task);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (Document doc : getCollection().find(filter).sort(Sorts.descending("created_at"))) {
+            tasks.add(mapDocumentToTask(doc));
         }
         return tasks;
-    }
-
-    public static Task getTaskByTitle(String userId, String title) {
-        String sql = "SELECT * FROM tasks WHERE user_id = ? AND title = ?";
-        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, title);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToTask(rs);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

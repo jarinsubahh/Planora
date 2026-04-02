@@ -10,6 +10,7 @@ import javafx.util.Duration;
 import javafx.scene.paint.Color;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.application.Platform;
 
 
 public class FocusModeController {
@@ -43,13 +44,20 @@ public class FocusModeController {
         clip.heightProperty().bind(animationPane.heightProperty());
         animationPane.setClip(clip);
 
-        // Tasks
-        // Only show uncompleted (pending) tasks in focus mode
-        taskSelector.setItems(FXCollections.observableArrayList(
-                TaskService.getTasksByUser(UserManager.currentUser).stream()
+        // Load tasks asynchronously to avoid blocking UI
+        new Thread(() -> {
+            try {
+                var tasks = TaskService.getTasksByUser(UserManager.currentUser).stream()
                         .filter(t -> !t.isCompleted())
-                        .collect(java.util.stream.Collectors.toList())
-        ));
+                        .collect(java.util.stream.Collectors.toList());
+                
+                Platform.runLater(() -> {
+                    taskSelector.setItems(FXCollections.observableArrayList(tasks));
+                });
+            } catch (Exception e) {
+                System.err.println("Error loading tasks: " + e.getMessage());
+            }
+        }).start();
 
         taskSelector.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(Task t, boolean empty) {
@@ -87,39 +95,34 @@ public class FocusModeController {
         resumeButton.setOnAction(e -> resumeTimer());
         exitButton.setOnAction(e -> exitFocusMode());
 
-        // Load audio files
-        try {
-            if (getClass().getResource("/com/example/javafx_project/rain.mpeg") != null) {
-                rainPlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/rain.mpeg").toString()));
-                rainPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                System.out.println("Rain sound loaded");
-                rainPlayer.statusProperty().addListener((obs, oldStatus, newStatus) -> 
-                    System.out.println("Rain player status: " + newStatus));
-            } else {
-                System.err.println("rain.mpeg not found");
+        // Load audio files asynchronously
+        new Thread(() -> {
+            try {
+                if (getClass().getResource("/com/example/javafx_project/rain.mpeg") != null) {
+                    rainPlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/rain.mpeg").toString()));
+                    rainPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    System.out.println("Rain sound loaded");
+                } else {
+                    System.err.println("rain.mpeg not found");
+                }
+                if (getClass().getResource("/com/example/javafx_project/night.mpeg") != null) {
+                    nightPlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/night.mpeg").toString()));
+                    nightPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    System.out.println("Night sound loaded");
+                } else {
+                    System.err.println("night.mpeg not found");
+                }
+                if (getClass().getResource("/com/example/javafx_project/nature.mpeg") != null) {
+                    naturePlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/nature.mpeg").toString()));
+                    naturePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    System.out.println("Nature sound loaded");
+                } else {
+                    System.err.println("nature.mpeg not found");
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading audio files: " + e.getMessage());
             }
-            if (getClass().getResource("/com/example/javafx_project/night.mpeg") != null) {
-                nightPlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/night.mpeg").toString()));
-                nightPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                System.out.println("Night sound loaded");
-                nightPlayer.statusProperty().addListener((obs, oldStatus, newStatus) -> 
-                    System.out.println("Night player status: " + newStatus));
-            } else {
-                System.err.println("night.mpeg not found");
-            }
-            if (getClass().getResource("/com/example/javafx_project/nature.mpeg") != null) {
-                naturePlayer = new MediaPlayer(new Media(getClass().getResource("/com/example/javafx_project/nature.mpeg").toString()));
-                naturePlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                System.out.println("Nature sound loaded");
-                // Debug status
-                naturePlayer.statusProperty().addListener((obs, oldStatus, newStatus) -> 
-                    System.out.println("Nature player status: " + newStatus));
-            } else {
-                System.err.println("nature.mpeg not found");
-            }
-        } catch (Exception e) {
-            System.err.println("Error loading audio files: " + e.getMessage());
-        }
+        }).start();
 
         // Sound toggle listener
         soundToggle.selectedProperty().addListener((obs, old, selected) -> {
