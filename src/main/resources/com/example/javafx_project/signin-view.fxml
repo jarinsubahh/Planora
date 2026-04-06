@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<StackPane prefHeight="600.0" prefWidth="800.0" styleClass="signin-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SignInController">
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="signin-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SignInController">
 
     <!-- Centered card -->
     <VBox alignment="CENTER" maxHeight="595.0" maxWidth="380.0" prefHeight="595.0" prefWidth="380.0" spacing="20" styleClass="auth-card">

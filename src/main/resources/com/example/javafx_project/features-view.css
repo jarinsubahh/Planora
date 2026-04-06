@@ -1,0 +1,139 @@
+/* ==============================
+   PLANORA FEATURES PAGE STYLESHEET
+   Soft Lavender Girlish Aesthetic
+   ============================== */
+
+/* Root - Main Background Gradient */
+* {
+    -fx-font-family: 'Poppins', 'Open Sans', system-ui, sans-serif;
+}
+
+.root {
+    -fx-background: linear-gradient(135deg, #F5F0FF 0%, #F0E6FF 50%, #EBE0FF 100%);
+}
+
+/* Hero Section */
+.hero-section {
+    -fx-background-color: transparent;
+}
+
+.hero-title {
+    -fx-font-size: 32;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3d2645;
+    -fx-line-spacing: 1.2;
+}
+
+/* Highlight "Stay on Track" in lavender */
+.hero-title:hover {
+    -fx-text-fill: #3d2645;
+}
+
+.hero-subtitle {
+    -fx-font-size: 14;
+    -fx-text-fill: #6b5682;
+    -fx-line-spacing: 1.3;
+}
+
+/* Back Button */
+.back-button {
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 12;
+    -fx-font-weight: 500;
+    -fx-text-fill: #5a4d7d;
+    -fx-background-color: #E8DFFF;
+    -fx-background-radius: 20;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    -fx-background-color: #D9CCFF;
+    -fx-text-fill: #4a3d6d;
+    -fx-effect: dropshadow(gaussian, rgba(200, 182, 255, 0.4), 8, 0.2, 0, 2);
+}
+
+.back-button:pressed {
+    -fx-background-color: #CFC2FF;
+    -fx-effect: dropshadow(gaussian, rgba(200, 182, 255, 0.3), 5, 0.2, 0, 1);
+}
+
+/* Cards Section */
+.cards-section {
+    -fx-background-color: transparent;
+}
+
+/* Feature Card */
+.feature-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(200, 182, 255, 0.2), 12, 0.1, 0, 4);
+    -fx-border-width: 1;
+    -fx-border-color: rgba(200, 182, 255, 0.2);
+    -fx-border-radius: 20;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+/* Card hover state - subtle shadow enhancement */
+.feature-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(200, 182, 255, 0.5), 20, 0.2, 0, 8);
+}
+
+/* Card Icon */
+.card-icon {
+    -fx-font-size: 40;
+    -fx-text-fill: #7d5fb8;
+    -fx-content-display: top;
+}
+
+/* Card Title */
+.card-title {
+    -fx-font-size: 16;
+    -fx-font-weight: 600;
+    -fx-text-fill: #3d2645;
+    -fx-wrap-text: true;
+    -fx-text-alignment: left;
+}
+
+/* Card Description */
+.card-description {
+    -fx-font-size: 13;
+    -fx-text-fill: #6b5682;
+    -fx-wrap-text: true;
+    -fx-text-alignment: left;
+    -fx-line-spacing: 1.3;
+}
+
+/* Labels */
+Label {
+    -fx-text-fill: #3d2645;
+}
+
+/* VBox adjustments for cards */
+VBox {
+    -fx-spacing: 0;
+}
+
+/* Responsive spacing */
+GridPane {
+    -fx-padding: 10;
+}
+
+/* Animation helper classes for smooth transitions */
+.fade-in {
+    -fx-opacity: 0;
+}
+
+/* Glow effect on hover using border */
+.card-glow:hover {
+    -fx-effect: dropshadow(gaussian, #C8B6FF, 15, 0.3, 0, 0);
+}
+
+/* Smooth transitions throughout the page */
+* {
+    -fx-transition: all 0.3s ease;
+}

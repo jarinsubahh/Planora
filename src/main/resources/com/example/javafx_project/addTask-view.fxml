@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" spacing="20.0" styleClass="modal-background" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.AddTaskController">
+<VBox prefHeight="650.0" prefWidth="900.0" spacing="20.0" styleClass="modal-background" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.AddTaskController">
    <!-- Header -->
    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header">
       <Button fx:id="backButton" onAction="#goBackToDashboard" styleClass="back-button" text="← Back" />

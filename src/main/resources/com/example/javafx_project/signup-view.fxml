@@ -9,19 +9,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane prefHeight="600.0" prefWidth="800.0" styleClass="auth-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SignUpController">
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="auth-root" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SignUpController">
 
     <!-- Centered card -->
-    <VBox alignment="CENTER" maxHeight="500" maxWidth="380" spacing="20" styleClass="auth-card">
+    <VBox alignment="CENTER" maxHeight="600.0" maxWidth="380" prefHeight="600.0" prefWidth="297.0" spacing="20" styleClass="auth-card">
 
         <!-- Headings -->
-        <VBox alignment="CENTER" prefHeight="86.0" prefWidth="261.0" spacing="5">
-            <Label prefHeight="57.0" prefWidth="164.0" styleClass="header-text" text="Plan Smart">
-            <font>
-               <Font size="11.0" />
-            </font></Label>
-            <Label style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #6EC1FF;" text="Glow Bright" />
-        </VBox>
+        <VBox alignment="CENTER" prefHeight="86.0" prefWidth="261.0" spacing="5" />
+         <Label prefHeight="57.0" prefWidth="164.0" styleClass="header-text" text="Plan Smart">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </Label>
+         <Label style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #6EC1FF;" text="Glow Bright" />
          <Label styleClass="subtitle-text" text="Start your journey with Planora" />
 
         <!-- Input fields -->

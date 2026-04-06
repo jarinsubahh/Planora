@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -58,7 +59,7 @@ public class DashboardController {
     private Label taskSectionTitleLabel;
 
     @FXML
-    private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn;
+    private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn, settingsBtn;
 
     private List<Task> currentTasks;
 
@@ -76,7 +77,6 @@ public class DashboardController {
         SpaceManager.loadFromFile();
         setTaskSectionHeading("✿ Today's Tasks");
         loadTasks();
-        updateStatistics();
     }
 
     private void updateHeaderDate() {
@@ -95,11 +95,9 @@ public class DashboardController {
 
     @FXML
     private void handleDashboard() {
-        // If calendar view is active, restore original main content
         setActiveButton(dashboardBtn);
         restoreOriginalMainContent();
         loadTasks();
-        updateStatistics();
     }
 
     @FXML
@@ -108,7 +106,6 @@ public class DashboardController {
         restoreOriginalMainContent();
         setTaskSectionHeading("✿ Today's Tasks");
         loadTodayTasks();
-        updateStatistics();
     }
 
     @FXML
@@ -117,7 +114,6 @@ public class DashboardController {
         restoreOriginalMainContent();
         setTaskSectionHeading("✿ Upcoming Task");
         loadUpcomingTasks();
-        updateStatistics();
     }
 
     @FXML
@@ -126,7 +122,6 @@ public class DashboardController {
         restoreOriginalMainContent();
         setTaskSectionHeading("✿ Completed Task");
         loadCompletedTasks();
-        updateStatistics();
     }
 
     @FXML
@@ -150,6 +145,7 @@ public class DashboardController {
     private GridPane calendarGrid;
     private VBox calendarPageRoot;
     private VBox dateTasksVBox;
+    private java.util.Map<java.time.LocalDate, Boolean> taskDateCache;
 
     @FXML
     private void handleCalendar() {
@@ -315,9 +311,7 @@ public class DashboardController {
         currentActiveSpace = null;
         updateHeaderDate();
         setTaskSectionHeading("✿ Today's Tasks");
-        // Refresh content
         loadTasks();
-        updateStatistics();
     }
 
     @FXML
@@ -342,9 +336,28 @@ public class DashboardController {
 
 
     @FXML
-    private void handleSettings() {
+    private void handleSpace() {
         setActiveButton(spaceBtn);
         showSpaceList();
+    }
+
+    @FXML
+    private void handleNavigateToSettings() {
+        setActiveButton(settingsBtn);
+        restoreOriginalMainContent();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/settings.fxml"));
+            javafx.scene.Parent settingsRoot = loader.load();
+
+            SettingsController controller = loader.getController();
+            controller.setOnBack(() -> handleDashboard());
+
+            mainContent.getChildren().clear();
+            mainContent.getChildren().add(settingsRoot);
+            VBox.setVgrow(settingsRoot, Priority.ALWAYS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -376,7 +389,7 @@ public class DashboardController {
         }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 900, 650);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
 
             AddTaskController controller = loader.getController();
@@ -396,8 +409,6 @@ public class DashboardController {
             } else {
                 loadTasks();
             }
-
-            updateStatistics();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -409,21 +420,25 @@ public class DashboardController {
             .filter(t -> !t.isCompleted())
             .toList();
         displayTasks(nonCompletedTasks);
+        updateStatisticsFromCache(currentTasks);
     }
 
     private void loadTodayTasks() {
         currentTasks = TaskService.getTodayTasks(UserManager.currentUser);
         displayTasks(currentTasks);
+        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void loadUpcomingTasks() {
         currentTasks = TaskService.getUpcomingTasks(UserManager.currentUser);
         displayTasks(currentTasks);
+        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void loadCompletedTasks() {
         currentTasks = TaskService.getCompletedTasks(UserManager.currentUser);
         displayTasks(currentTasks);
+        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void displayTasks(List<Task> tasks) {
@@ -503,23 +518,19 @@ public class DashboardController {
     }
 
     private void markTaskDone(Task task) {
-        // We now pass the Task Title and the current logged-in username
         TaskService.markCompleted(task.getTitle(), UserManager.currentUser);
         loadTasks();
-        updateStatistics();
     }
 
     private void deleteTask(Task task) {
-        // Change from task.getId() to title and currentUser
         TaskService.deleteTask(task.getTitle(), UserManager.currentUser);
         loadTasks();
-        updateStatistics();
     }
 
     private void handleEditTask(Task task) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 900, 650);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
 
             AddTaskController controller = loader.getController();
@@ -535,7 +546,6 @@ public class DashboardController {
             modalStage.showAndWait();
 
             loadTasks();
-            updateStatistics();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -543,6 +553,10 @@ public class DashboardController {
 
     private void updateStatistics() {
         List<Task> allTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        updateStatisticsFromCache(allTasks);
+    }
+
+    private void updateStatisticsFromCache(List<Task> allTasks) {
         LocalDate today = LocalDate.now();
 
         long todayCount = allTasks.stream()
@@ -925,7 +939,7 @@ public class DashboardController {
     }
     private void setActiveButton(Button activeButton) {
         // List of all your sidebar buttons
-        Button[] allButtons = {dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn};
+        Button[] allButtons = {dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn, settingsBtn};
 
         // Remove the active class from all buttons
         for (Button btn : allButtons) {

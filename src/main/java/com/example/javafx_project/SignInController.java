@@ -42,7 +42,7 @@ public class SignInController {
             try {
                 Stage stage = (Stage) usernameField.getScene().getWindow();
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/dashboard-view.fxml"));
-                Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+                Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
                 stage.setScene(scene);
             } catch (Exception e) {
                 System.err.println("Error loading dashboard: " + e.getMessage());
@@ -59,7 +59,7 @@ public class SignInController {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/com/example/javafx_project/signup-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+            Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
             stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();

@@ -132,7 +132,7 @@ public class PlanoraLandingPage extends Application {
         mainContainer.getChildren().addAll(navbar, heroSection);
         root.getChildren().add(mainContainer);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/styles.css").toExternalForm());
 
         primaryStage.setTitle("PLANORA - Landing Page");
@@ -141,11 +141,13 @@ public class PlanoraLandingPage extends Application {
         primaryStage.show();
 
         addHoverAnimation(signInBtn);
+        addHoverAnimation(learnMoreBtn);
+
         signInBtn.setOnAction(e -> {
             try {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/signin-view.fxml"));
-                Scene signInScene = new Scene(loader.load(), 800, 600);
+                Scene signInScene = new Scene(loader.load(), 1000, 600);
                 Stage stage = (Stage) signInBtn.getScene().getWindow();
                 stage.setScene(signInScene);
             } catch (Exception ex) {
@@ -158,9 +160,37 @@ public class PlanoraLandingPage extends Application {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/signin-view.fxml")
                 );
-                Scene signInScene = new Scene(loader.load(), 800, 600);
+                Scene signInScene = new Scene(loader.load(), 1000, 600);
                 Stage stage = (Stage) getStartedBtn.getScene().getWindow();
                 stage.setScene(signInScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Add event handler for Features link
+        featuresLink.setStyle(featuresLink.getStyle() + "; -fx-cursor: hand;");
+        addHoverAnimationLabel(featuresLink);
+        featuresLink.setOnMouseClicked(e -> {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/com/example/javafx_project/features-view.fxml"));
+                Scene featuresScene = new Scene(loader.load(), 1000, 600);
+                Stage stage = (Stage) featuresLink.getScene().getWindow();
+                stage.setScene(featuresScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Add event handler for Learn More button
+        learnMoreBtn.setOnAction(e -> {
+            try {
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/com/example/javafx_project/features-view.fxml"));
+                Scene featuresScene = new Scene(loader.load(), 1000, 600);
+                Stage stage = (Stage) learnMoreBtn.getScene().getWindow();
+                stage.setScene(featuresScene);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -184,6 +214,19 @@ public class PlanoraLandingPage extends Application {
 
         button.setOnMouseEntered(e -> scaleUp.playFromStart());
         button.setOnMouseExited(e -> scaleDown.playFromStart());
+    }
+
+    private void addHoverAnimationLabel(Label label) {
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(180), label);
+        scaleUp.setToX(1.08);
+        scaleUp.setToY(1.08);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(180), label);
+        scaleDown.setToX(1);
+        scaleDown.setToY(1);
+
+        label.setOnMouseEntered(e -> scaleUp.playFromStart());
+        label.setOnMouseExited(e -> scaleDown.playFromStart());
     }
 
     public static void main(String[] args) {

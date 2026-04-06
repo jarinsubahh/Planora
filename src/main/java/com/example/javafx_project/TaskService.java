@@ -87,6 +87,19 @@ public class TaskService {
         getCollection().deleteOne(filter);
     }
 
+    /** Removes all tasks owned by a user (e.g. account deletion). */
+    public static void deleteAllTasksForUser(String userId) {
+        if (!DatabaseManager.isConnected() || userId == null) {
+            return;
+        }
+        try {
+            getCollection().deleteMany(Filters.eq("user_id", userId));
+        } catch (Exception e) {
+            System.err.println("Error deleting tasks for user: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static void updateTask(Task task) {
         Bson filter = Filters.and(
                 Filters.eq("title", task.getTitle()),

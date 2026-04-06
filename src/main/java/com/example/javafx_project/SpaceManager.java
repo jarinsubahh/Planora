@@ -48,6 +48,29 @@ public class SpaceManager {
                 .orElse(null);
     }
 
+    /**
+     * Removes the user from all local spaces: deletes spaces they admin,
+     * or removes them from member lists. Persists to {@code spaces.dat}.
+     */
+    public static void removeUserFromAllSpacesLocal(String username) {
+        if (username == null) {
+            return;
+        }
+        if (allSpaces.isEmpty()) {
+            loadFromFile();
+        }
+        List<Space> toRemove = new ArrayList<>();
+        for (Space space : new ArrayList<>(allSpaces)) {
+            if (username.equals(space.getAdminUsername())) {
+                toRemove.add(space);
+            } else {
+                space.getMembers().removeIf(m -> m.equals(username));
+            }
+        }
+        allSpaces.removeAll(toRemove);
+        saveToFile();
+    }
+
     public static void deleteSpace(String spaceName) {
         // Remove from local list
         allSpaces.removeIf(s -> s.getSpaceName().equals(spaceName));

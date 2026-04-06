@@ -107,7 +107,7 @@
 /* Stats Row */
 .stats-row {
     -fx-alignment: center_left;
-    -fx-spacing: 40;
+    -fx-spacing: 60;
 }
 
 .stats-card {
