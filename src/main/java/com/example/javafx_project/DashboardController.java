@@ -323,7 +323,6 @@ public class DashboardController {
             focusRoot.getStylesheets().add(getClass().getResource("/com/example/javafx_project/focus-mode.css").toExternalForm());
 
             FocusModeController controller = loader.getController();
-            controller.setOnExit(() -> handleDashboard());
 
             mainContent.getChildren().clear();
             mainContent.getChildren().add(focusRoot);
