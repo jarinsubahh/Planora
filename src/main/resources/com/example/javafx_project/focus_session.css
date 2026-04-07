@@ -1,0 +1,154 @@
+.focus-session-root {
+    -fx-background-color: linear-gradient(to bottom right, #F5F3FF, #EDE9FE);
+}
+
+/* TIMER - Large Digital Clock */
+.focus-session-timer {
+    -fx-font-size: 96px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6D6AAE;
+    -fx-font-family: "Courier New", monospace;
+}
+
+/* TASK TITLE */
+.focus-session-task-title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #4C4A7A;
+    -fx-font-weight: bold;
+}
+
+/* CONTROL BUTTONS - IMPROVED AESTHETIC */
+.focus-control-btn {
+    -fx-background-color: #C4B5FD;
+    -fx-text-fill: #2D1B4E;
+    -fx-padding: 10 18 10 18;
+    -fx-background-radius: 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-min-width: 100px;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.3), 8, 0, 0, 2);
+}
+
+.focus-control-btn:hover {
+    -fx-background-color: #B8A4F3;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.5), 12, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.focus-control-btn:pressed {
+    -fx-background-color: #A78BFA;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.7), 10, 0, 0, 2);
+}
+
+.focus-control-btn:disabled {
+    -fx-background-color: #E9D5FF;
+    -fx-text-fill: #A78BFA;
+    -fx-opacity: 0.5;
+    -fx-effect: none;
+}
+
+/* TOGGLE BUTTON (Sound Toggle) */
+.focus-control-btn.toggle-button:selected {
+    -fx-background-color: #A78BFA;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.6), 12, 0, 0, 3);
+}
+
+/* EXIT BUTTON - DISTINCT STYLING */
+.focus-exit-btn {
+    -fx-background-color: #FCA5A5;
+    -fx-text-fill: white;
+    -fx-padding: 10 18 10 18;
+    -fx-background-radius: 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-min-width: 100px;
+    -fx-effect: dropshadow(gaussian, rgba(244, 114, 182, 0.3), 8, 0, 0, 2);
+}
+
+.focus-exit-btn:hover {
+    -fx-background-color: #F87171;
+    -fx-effect: dropshadow(gaussian, rgba(244, 114, 182, 0.5), 12, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.focus-exit-btn:pressed {
+    -fx-background-color: #EF4444;
+    -fx-effect: dropshadow(gaussian, rgba(244, 114, 182, 0.7), 10, 0, 0, 2);
+}
+
+/* NIGHT MODE - override styles */
+.focus-session-root.night-mode {
+    -fx-background-color: linear-gradient(to bottom right, #0b1226, #1b2735);
+}
+
+.night-mode .focus-session-timer {
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.6), 6, 0, 0, 2);
+}
+
+.night-mode .focus-session-task-title {
+    -fx-text-fill: #D9E6FF;
+}
+
+.night-mode .focus-control-btn {
+    -fx-background-color: rgba(255,255,255,0.15);
+    -fx-text-fill: #E0E7FF;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.2), 8, 0, 0, 2);
+}
+
+.night-mode .focus-control-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.25);
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 12, 0, 0, 3);
+}
+
+.night-mode .focus-exit-btn {
+    -fx-background-color: rgba(244,63,94,0.2);
+    -fx-text-fill: #FF9AB8;
+    -fx-effect: dropshadow(gaussian, rgba(244,63,94,0.3), 8, 0, 0, 2);
+}
+
+.night-mode .focus-exit-btn:hover {
+    -fx-background-color: rgba(244,63,94,0.35);
+    -fx-effect: dropshadow(gaussian, rgba(244,63,94,0.5), 12, 0, 0, 3);
+}
+
+/* NATURE MODE - override styles */
+.focus-session-root.nature-mode {
+    -fx-background-color: linear-gradient(to bottom, #f0fff4, #e6fff6);
+}
+
+.nature-mode .focus-session-timer {
+    -fx-text-fill: #234D3A;
+}
+
+.nature-mode .focus-session-task-title {
+    -fx-text-fill: #2E4D3A;
+}
+
+.nature-mode .focus-control-btn {
+    -fx-background-color: #D1FAE5;
+    -fx-text-fill: #0f172a;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.2), 8, 0, 0, 2);
+}
+
+.nature-mode .focus-control-btn:hover {
+    -fx-background-color: #A7F3D0;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.4), 12, 0, 0, 3);
+}
+
+.nature-mode .focus-exit-btn {
+    -fx-background-color: #FECACA;
+    -fx-text-fill: #7F1D1D;
+    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.2), 8, 0, 0, 2);
+}
+
+.nature-mode .focus-exit-btn:hover {
+    -fx-background-color: #FCA5A5;
+    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 12, 0, 0, 3);
+}
+

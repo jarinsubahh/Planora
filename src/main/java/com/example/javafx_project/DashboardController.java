@@ -82,7 +82,7 @@ public class DashboardController {
     private void updateHeaderDate() {
         if (headerDateLabel != null) {
             headerDateLabel.setText(LocalDate.now().format(
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(Locale.ENGLISH)));
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(Locale.ENGLISH)));
         }
     }
 
@@ -235,22 +235,25 @@ public class DashboardController {
                 int cellIndex = r * 7 + c;
                 if (cellIndex < startIndex || day > length) {
                     StackPane empty = new StackPane();
-                    empty.setPrefSize(80, 80);
+                    empty.setPrefSize(80, 80);  // ← Smaller empty cell size (was 80)
                     calendarGrid.add(empty, c, r + rowOffset);
                 } else {
                     java.time.LocalDate date = currentYearMonth.atDay(day);
 
                     StackPane dateCell = new StackPane();
-                    dateCell.setPrefSize(80, 80);
+                    dateCell.setPrefSize(80, 80);  // ← Smaller date cell size (was 80)
                     dateCell.getStyleClass().add("calendar-date-cell");
 
-                    VBox content = new VBox(6);
+                    VBox content = new VBox(5);
                     content.setAlignment(Pos.CENTER);
                     Label dayLabel = new Label(String.valueOf(day));
                     dayLabel.getStyleClass().add("calendar-day-number");
 
                     if (hasTaskOnDate(date)) {
-                        Circle dot = new Circle(3, javafx.scene.paint.Color.web("#7A73FF"));
+                        // Add purple glassy styling class for dates with tasks
+                        dateCell.getStyleClass().add("calendar-date-cell-with-task");
+                        // Add small dot indicator (optional, can be removed if just using color)
+                        Circle dot = new Circle(2.5, javafx.scene.paint.Color.web("#7A73FF"));
                         content.getChildren().addAll(dayLabel, dot);
                     } else {
                         content.getChildren().add(dayLabel);
@@ -267,7 +270,7 @@ public class DashboardController {
             }
         }
     }
-   
+
     private void showTasksForDate(java.time.LocalDate date) {
         // Clear calendar and show task view
         calendarPageRoot.getChildren().clear();
@@ -417,8 +420,8 @@ public class DashboardController {
     private void loadTasks() {
         currentTasks = TaskService.getTasksByUser(UserManager.currentUser);
         List<Task> nonCompletedTasks = currentTasks.stream()
-            .filter(t -> !t.isCompleted())
-            .toList();
+                .filter(t -> !t.isCompleted())
+                .toList();
         displayTasks(nonCompletedTasks);
         updateStatisticsFromCache(currentTasks);
     }
@@ -476,7 +479,7 @@ public class DashboardController {
 
         // Deadline
         Label deadlineLabel = new Label(task.getDeadline() != null ?
-            "Due: " + task.getDeadline().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")) : "");
+                "Due: " + task.getDeadline().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")) : "");
         deadlineLabel.getStyleClass().add("task-deadline");
 
         contentBox.getChildren().addAll(titleLabel, descLabel, priorityBadge, deadlineLabel);
@@ -560,16 +563,16 @@ public class DashboardController {
         LocalDate today = LocalDate.now();
 
         long todayCount = allTasks.stream()
-            .filter(t -> t.getDeadline() != null && 
-                         t.getDeadline().equals(today) && 
-                         !t.isCompleted())
-            .count();
+                .filter(t -> t.getDeadline() != null &&
+                        t.getDeadline().equals(today) &&
+                        !t.isCompleted())
+                .count();
 
         long upcomingCount = allTasks.stream()
-            .filter(t -> t.getDeadline() != null && 
-                         t.getDeadline().isAfter(today) && 
-                         !t.isCompleted())
-            .count();
+                .filter(t -> t.getDeadline() != null &&
+                        t.getDeadline().isAfter(today) &&
+                        !t.isCompleted())
+                .count();
 
         long totalCount = allTasks.size();
 
@@ -583,11 +586,11 @@ public class DashboardController {
 
     private long calculateStreak(List<Task> allTasks) {
         List<LocalDate> completionDates = allTasks.stream()
-            .filter(Task::isCompleted)
-            .map(t -> t.getDeadline() != null ? t.getDeadline() : t.getCreatedAt().toLocalDate())
-            .distinct()
-            .sorted()
-            .toList();
+                .filter(Task::isCompleted)
+                .map(t -> t.getDeadline() != null ? t.getDeadline() : t.getCreatedAt().toLocalDate())
+                .distinct()
+                .sorted()
+                .toList();
 
         if (completionDates.isEmpty()) {
             return 0;
@@ -726,7 +729,7 @@ public class DashboardController {
 
     private void showSpaceDetails(Space space) {
         this.currentActiveSpace = space;
-        
+
         // Load the new FXML with space content + chat
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/space-with-chat.fxml"));
@@ -761,24 +764,24 @@ public class DashboardController {
             inviteBtn.setVisible(isAdmin);
 
             HBox actionHeader = new HBox(15, backBtn, title, addTaskBtn, inviteBtn);
-            
+
             // Add delete button for admin only
             if (isAdmin) {
                 Button deleteSpaceBtn = new Button("🗑 Delete Space");
                 deleteSpaceBtn.setStyle(
-                    "-fx-background-color: rgba(244, 67, 54, 0.8);" +
-                    "-fx-text-fill: white;" +
-                    "-fx-padding: 8 15;" +
-                    "-fx-font-size: 12;" +
-                    "-fx-font-weight: bold;" +
-                    "-fx-background-radius: 15;" +
-                    "-fx-cursor: hand;" +
-                    "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
+                        "-fx-background-color: rgba(244, 67, 54, 0.8);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-padding: 8 15;" +
+                                "-fx-font-size: 12;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-background-radius: 15;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
                 );
                 deleteSpaceBtn.setOnAction(e -> handleDeleteSpace(space));
                 actionHeader.getChildren().add(deleteSpaceBtn);
             }
-            
+
             actionHeader.setAlignment(Pos.CENTER_LEFT);
 
             VBox taskArea = new VBox(15);
@@ -789,12 +792,12 @@ public class DashboardController {
             }
 
             spaceContentContainer.getChildren().addAll(actionHeader, taskArea);
-            
+
             // Replace main content with space+chat view
             mainContent.getChildren().clear();
             mainContent.getChildren().add(spaceWithChatRoot);
             VBox.setVgrow(spaceWithChatRoot, Priority.ALWAYS);
-            
+
         } catch (IOException e) {
             System.err.println("Error loading space with chat: " + e.getMessage());
             e.printStackTrace();
@@ -823,7 +826,7 @@ public class DashboardController {
         confirmAlert.setTitle("Delete Space");
         confirmAlert.setHeaderText("Delete \"" + space.getSpaceName() + "\"?");
         confirmAlert.setContentText("This action cannot be undone. All space members will lose access.");
-        
+
         if (confirmAlert.showAndWait().get() == ButtonType.OK) {
             SpaceManager.deleteSpace(space.getSpaceName());
             // Also delete all messages for this space
@@ -835,7 +838,7 @@ public class DashboardController {
 
     private void showInvitations() {
         mainContent.getChildren().clear();
-        
+
         Label title = new Label("Your Invitations");
         title.getStyleClass().add("greeting");
 
@@ -873,13 +876,13 @@ public class DashboardController {
     private VBox createInvitationCard(Invitation invitation) {
         VBox card = new VBox(10);
         card.setStyle(
-            "-fx-background-color: rgba(123, 115, 255, 0.15);" +
-            "-fx-border-color: rgba(255, 255, 255, 0.3);" +
-            "-fx-border-radius: 20;" +
-            "-fx-background-radius: 20;" +
-            "-fx-padding: 20;" +
-            "-fx-border-width: 1;" +
-            "-fx-effect: dropshadow(gaussian, rgba(255, 111, 181, 0.3), 15, 0, 0, 0);"
+                "-fx-background-color: rgba(123, 115, 255, 0.15);" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.3);" +
+                        "-fx-border-radius: 20;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-padding: 20;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(255, 111, 181, 0.3), 15, 0, 0, 0);"
         );
         card.setPrefWidth(550);
 
@@ -898,14 +901,14 @@ public class DashboardController {
 
         Button acceptBtn = new Button("✓ Accept");
         acceptBtn.setStyle(
-            "-fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);" +
-            "-fx-text-fill: white;" +
-            "-fx-padding: 10 25;" +
-            "-fx-font-size: 13;" +
-            "-fx-font-weight: bold;" +
-            "-fx-background-radius: 20;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.5), 10, 0, 0, 2);"
+                "-fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 10 25;" +
+                        "-fx-font-size: 13;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.5), 10, 0, 0, 2);"
         );
         acceptBtn.setOnAction(e -> {
             InvitationManager.acceptInvitation(invitation.spaceName, UserManager.currentUser);
@@ -916,14 +919,14 @@ public class DashboardController {
 
         Button declineBtn = new Button("✗ Decline");
         declineBtn.setStyle(
-            "-fx-background-color: rgba(244, 67, 54, 0.8);" +
-            "-fx-text-fill: white;" +
-            "-fx-padding: 10 25;" +
-            "-fx-font-size: 13;" +
-            "-fx-font-weight: bold;" +
-            "-fx-background-radius: 20;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
+                "-fx-background-color: rgba(244, 67, 54, 0.8);" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 10 25;" +
+                        "-fx-font-size: 13;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
         );
         declineBtn.setOnAction(e -> {
             InvitationManager.declineInvitation(invitation.spaceName, UserManager.currentUser);

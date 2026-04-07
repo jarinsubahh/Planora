@@ -287,23 +287,45 @@
 }
 
 .calendar-weekday-label {
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #555555;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #7A73FF;
+    -fx-padding: 8 4;
 }
 
 .calendar-day-number {
-    -fx-font-size: 15px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-text-fill: #2E2E3A;
 }
 
 .calendar-date-cell {
     -fx-background-color: #FFFFFF;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.1), 5, 0, 0, 1);
+    -fx-min-width: 90px;
+    -fx-min-height: 90px;
+    -fx-pref-width: 90px;
+    -fx-pref-height: 90px;
 }
 
 .calendar-date-cell:hover {
-    -fx-background-color: #F0EEF8;
+    -fx-background-color: #F5F3FF;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.25), 8, 0, 0, 2);
+}
+
+/* Date with tasks - Purple glassy background */
+.calendar-date-cell-with-task {
+    -fx-background-color: rgba(122, 115, 255, 0.2);
+    -fx-border-color: rgba(122, 115, 255, 0.3);
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.3), 8, 0, 0, 2);
+}
+
+.calendar-date-cell-with-task:hover {
+    -fx-background-color: rgba(122, 115, 255, 0.3);
+    -fx-border-color: rgba(122, 115, 255, 0.5);
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.5), 12, 0, 0, 3);
 }

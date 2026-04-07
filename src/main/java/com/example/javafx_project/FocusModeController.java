@@ -3,6 +3,9 @@ package com.example.javafx_project;
 import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -11,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 
 
 public class FocusModeController {
@@ -50,7 +54,7 @@ public class FocusModeController {
                 var tasks = TaskService.getTasksByUser(UserManager.currentUser).stream()
                         .filter(t -> !t.isCompleted())
                         .collect(java.util.stream.Collectors.toList());
-                
+
                 Platform.runLater(() -> {
                     taskSelector.setItems(FXCollections.observableArrayList(tasks));
                 });
@@ -95,7 +99,8 @@ public class FocusModeController {
         resumeButton.setOnAction(e -> resumeTimer());
         exitButton.setOnAction(e -> exitFocusMode());
 
-        // Load audio files asynchronously
+        // Note: Sound loading moved to FocusSessionController
+        // Keeping this for backward compatibility with existing setup
         new Thread(() -> {
             try {
                 if (getClass().getResource("/com/example/javafx_project/rain.mpeg") != null) {
@@ -124,7 +129,7 @@ public class FocusModeController {
             }
         }).start();
 
-        // Sound toggle listener
+        // Sound toggle listener (kept for setup pane, not used in new window)
         soundToggle.selectedProperty().addListener((obs, old, selected) -> {
             if (selected) {
                 if ("RAIN".equals(selectedMode) && rainPlayer != null) rainPlayer.play();
@@ -159,33 +164,45 @@ public class FocusModeController {
 
         if (selectedMode == null) return;
 
-        timeRemaining = getDuration();
+        try {
+            // Load the focus session FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/focus_session.fxml"));
+            Parent root = loader.load();
 
-        setupPane.setVisible(false);
-        focusPane.setVisible(true);
+            // Get the controller and pass data
+            FocusSessionController focusController = loader.getController();
+            int durationSeconds = getDuration();
+            Task selectedTask = taskSelector.getValue();
 
-        taskTitleLabel.setText(taskSelector.getValue().getTitle());
+            // Get the current stage to pass as previous stage
+            Stage currentStage = (Stage) startButton.getScene().getWindow();
 
-        // Add top padding to focusPane to make room for exit button
-        focusPane.setStyle("-fx-padding: 60 0 0 0;");
+            // Set up the focus session with task data
+            focusController.setTaskData(selectedTask, selectedMode, durationSeconds, currentStage);
 
-        startAnimation();
+            // Create new stage for focus session
+            Stage focusStage = new Stage();
+            Scene scene = new Scene(root, 1200, 700);
 
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            timeRemaining--;
-            updateTimer();
+            // Apply CSS
+            scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/focus_session.css").toExternalForm());
 
-            if (timeRemaining <= 0) {
-                timeline.stop();
-            }
-        }));
+            focusStage.setScene(scene);
+            focusStage.setResizable(false);
+            focusStage.setTitle("Focus Session - " + selectedTask.getTitle());
 
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+            // Hide current window
+            currentStage.hide();
 
-        // Enable pause, disable resume
-        pauseButton.setDisable(false);
-        resumeButton.setDisable(true);
+            // Show focus session window
+            focusStage.show();
+
+        } catch (Exception e) {
+            System.err.println("Error opening focus session: " + e.getMessage());
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error starting focus session. Please try again.");
+            alert.showAndWait();
+        }
     }
 
     private void updateTimer() {
@@ -427,24 +444,19 @@ public class FocusModeController {
     }
 
     private void exitFocusMode() {
+        // Just reset UI for the setup pane (in case user navigates back)
         if (timeline != null) timeline.stop();
         if (rainPlayer != null) rainPlayer.stop();
         if (naturePlayer != null) naturePlayer.stop();
         if (nightPlayer != null) nightPlayer.stop();
-        // Clear animations and reset UI
+        
         animationPane.getChildren().clear();
         focusPane.setVisible(false);
         setupPane.setVisible(true);
-        // Reset focusPane style
         focusPane.setStyle("");
-        // Reset buttons
         pauseButton.setDisable(true);
         resumeButton.setDisable(true);
-        // Stop sound toggle
         soundToggle.setSelected(false);
         updateModeToggleStyles();
-        // Always exit to dashboard
-        //if (onExit != null) {
-            //onExit.run();}
     }
 }

@@ -17,7 +17,7 @@
         <HBox alignment="CENTER_LEFT" prefWidth="750">
             <Pane HBox.hgrow="ALWAYS">
             <children>
-                  <Label layoutX="335.0" layoutY="1.0" styleClass="header-label" text="Focus Mode" />
+                  <Label layoutX="428.0" layoutY="1.0" styleClass="header-label" text="Focus Mode" />
             </children></Pane>
         </HBox>
 
