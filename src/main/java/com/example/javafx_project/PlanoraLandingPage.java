@@ -22,6 +22,7 @@ public class PlanoraLandingPage extends Application {
 
         StackPane root = new StackPane();
         root.setId("root");
+        addGlassyCircles(root);
 
         Circle bgCircle = new Circle(250, Color.web("#FFD6E8", 0.15));
         bgCircle.setTranslateX(-300);
@@ -70,8 +71,8 @@ public class PlanoraLandingPage extends Application {
         HBox navLinks = new HBox(25);
         navLinks.setAlignment(Pos.CENTER_RIGHT);
 
-        Label homeLink = new Label("Home");
-        homeLink.setId("homeLink");
+//        Label homeLink = new Label("Home");
+//        homeLink.setId("homeLink");
 
         Label featuresLink = new Label("Features");
         featuresLink.setId("featuresLink");
@@ -79,7 +80,7 @@ public class PlanoraLandingPage extends Application {
         Button signInBtn = new Button("Sign In");
         signInBtn.setId("signInBtn");
 
-        navLinks.getChildren().addAll(homeLink, featuresLink, signInBtn);
+        navLinks.getChildren().addAll(featuresLink, signInBtn);
         navbar.getChildren().addAll(logoSection, spacer, navLinks);
 
         VBox heroSection = new VBox(25);
@@ -230,6 +231,38 @@ public class PlanoraLandingPage extends Application {
         label.setOnMouseEntered(e -> scaleUp.playFromStart());
         label.setOnMouseExited(e -> scaleDown.playFromStart());
     }
+    // Add spacious pulsing glassy circles
+    private void addGlassyCircles(StackPane root) {
+        for (int i = 0; i < 3; i++) {
+            Circle circle = new Circle(160 + Math.random() * 100,Color.web("rgba(220, 200, 255, 0.18)") // soft lavender transparency
+            );
+
+            // Position them more spread out
+            circle.setTranslateX(-500 + i * 400); // evenly spaced horizontally
+            circle.setTranslateY(-250 + (i % 2) * 300); // stagger vertically
+
+            // Soft glow effect
+            circle.setEffect(new DropShadow(35, Color.web("#E6D6FF")));
+
+            // Pulse animation (grow/shrink)
+            ScaleTransition pulse = new ScaleTransition(Duration.seconds(12 + i * 3), circle);
+            pulse.setFromX(1.0);
+            pulse.setFromY(1.0);
+            pulse.setToX(1.3);
+            pulse.setToY(1.3);
+            pulse.setAutoReverse(true);
+            pulse.setCycleCount(Animation.INDEFINITE);
+
+            pulse.play();
+
+            root.getChildren().add(0, circle); // place behind main content
+        }
+
+
+
+    }
+
+
 
     public static void main(String[] args) {
         launch(args);
