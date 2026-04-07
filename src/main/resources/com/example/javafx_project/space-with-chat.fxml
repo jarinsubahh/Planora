@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="space-with-chat-root" 
@@ -29,9 +30,11 @@
     <right>
         <VBox prefWidth="350.0" styleClass="chat-panel" BorderPane.alignment="TOP_CENTER">
             <!-- Chat Header -->
-            <HBox styleClass="chat-header" spacing="10.0">
+            <HBox styleClass="chat-header" spacing="10.0" alignment="CENTER_LEFT">
                 <children>
                     <Label text="💬 Space Chat" styleClass="chat-title" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button text="ℹ Info" onAction="#showSpaceInfo" styleClass="info-button" />
                 </children>
             </HBox>
             
@@ -55,7 +58,7 @@
                              prefRowCount="3"
                              styleClass="message-input"
                              promptText="Type a message..." />
-                    <Button fx:id="sendButton" text="📤 Send" styleClass="send-button" />
+                    <Button fx:id="sendButton" text="📤 Send" styleClass="send-button send-button-circular" />
                 </children>
             </VBox>
         </VBox>

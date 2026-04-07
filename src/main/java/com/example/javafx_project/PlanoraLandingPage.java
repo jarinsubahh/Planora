@@ -137,9 +137,7 @@ public class PlanoraLandingPage extends Application {
 
         primaryStage.setTitle("PLANORA - Landing Page");
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.setWidth(1200);
-        primaryStage.setHeight(700);
+        applyFixedStageDimensions(primaryStage);
         primaryStage.show();
 
         addHoverAnimation(signInBtn);
@@ -152,6 +150,7 @@ public class PlanoraLandingPage extends Application {
                 Scene signInScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) signInBtn.getScene().getWindow();
                 stage.setScene(signInScene);
+                applyFixedStageDimensions(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -165,6 +164,7 @@ public class PlanoraLandingPage extends Application {
                 Scene signInScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) getStartedBtn.getScene().getWindow();
                 stage.setScene(signInScene);
+                applyFixedStageDimensions(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -180,6 +180,7 @@ public class PlanoraLandingPage extends Application {
                 Scene featuresScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) featuresLink.getScene().getWindow();
                 stage.setScene(featuresScene);
+                applyFixedStageDimensions(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -193,6 +194,7 @@ public class PlanoraLandingPage extends Application {
                 Scene featuresScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) learnMoreBtn.getScene().getWindow();
                 stage.setScene(featuresScene);
+                applyFixedStageDimensions(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -233,5 +235,11 @@ public class PlanoraLandingPage extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void applyFixedStageDimensions(Stage stage) {
+        stage.setResizable(false);
+        stage.setWidth(1200);
+        stage.setHeight(700);
     }
 }

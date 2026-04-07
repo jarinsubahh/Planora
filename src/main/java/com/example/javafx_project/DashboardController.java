@@ -73,8 +73,7 @@ public class DashboardController {
         // capture original main content children so calendar can replace and restore
         originalMainChildren = new java.util.ArrayList<>(mainContent.getChildren());
         updateHeaderDate();
-        // Load all tasks by default
-        SpaceManager.loadFromFile();
+        // All data is now loaded directly from cloud on-demand
         setTaskSectionHeading("✿ Today's Tasks");
         loadTasks();
     }
@@ -713,7 +712,12 @@ public class DashboardController {
             deleteBtn.getStyleClass().add("delete-button");
             deleteBtn.setOnAction(e -> {
                 space.getSpaceTasks().remove(task);
-                SpaceManager.saveToFile();
+                // Save to MongoDB (cloud-first)
+                if (DatabaseManager.isConnected()) {
+                    new Thread(() -> DatabaseManager.saveSpace(space)).start();
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                }
                 showSpaceDetails(space); // Refresh UI
             });
 

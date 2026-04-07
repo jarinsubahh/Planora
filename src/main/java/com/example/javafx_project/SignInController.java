@@ -65,4 +65,17 @@ public class SignInController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void handleForgotPassword() {
+        try {
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getResource("/com/example/javafx_project/forgot-password.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            stage.setScene(scene);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

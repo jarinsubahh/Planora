@@ -122,9 +122,28 @@ public class DatabaseManager {
         
         try {
             MongoCollection<Document> spacesCollection = getSpacesCollection();
+            
+            // Convert tasks to Documents
+            List<Document> taskDocs = new ArrayList<>();
+            if (space.getSpaceTasks() != null) {
+                for (Task task : space.getSpaceTasks()) {
+                    Document taskDoc = new Document("id", task.getId())
+                            .append("userId", task.getUserId())
+                            .append("title", task.getTitle())
+                            .append("description", task.getDescription())
+                            .append("deadline", task.getDeadline() != null ? task.getDeadline().toString() : null)
+                            .append("category", task.getCategory())
+                            .append("priority", task.getPriority())
+                            .append("completed", task.isCompleted())
+                            .append("createdAt", task.getCreatedAt() != null ? task.getCreatedAt().toString() : null);
+                    taskDocs.add(taskDoc);
+                }
+            }
+            
             Document spaceDoc = new Document("spaceName", space.getSpaceName())
                     .append("adminUsername", space.getAdminUsername())
-                    .append("members", space.getMembers());
+                    .append("members", space.getMembers())
+                    .append("spaceTasks", taskDocs);
             
             Document existing = spacesCollection.find(new Document("spaceName", space.getSpaceName())).first();
             if (existing == null) {
@@ -159,6 +178,47 @@ public class DatabaseManager {
                         }
                     }
                 }
+                
+                // Load space tasks
+                List<?> tasksList = doc.getList("spaceTasks", Object.class);
+                if (tasksList != null) {
+                    for (Object taskObj : tasksList) {
+                        if (taskObj instanceof Document) {
+                            Document taskDoc = (Document) taskObj;
+                            Task task = new Task();
+                            task.setId(taskDoc.getInteger("id") != null ? taskDoc.getInteger("id") : 0);
+                            task.setUserId(taskDoc.getString("userId"));
+                            task.setTitle(taskDoc.getString("title"));
+                            task.setDescription(taskDoc.getString("description"));
+                            task.setPriority(taskDoc.getString("priority"));
+                            task.setCategory(taskDoc.getString("category"));
+                            task.setCompleted(taskDoc.getBoolean("completed") != null ? taskDoc.getBoolean("completed") : false);
+                            
+                            // Parse deadline
+                            String deadlineStr = taskDoc.getString("deadline");
+                            if (deadlineStr != null) {
+                                try {
+                                    task.setDeadline(java.time.LocalDate.parse(deadlineStr));
+                                } catch (Exception e) {
+                                    // Date parsing failed, leave as null
+                                }
+                            }
+                            
+                            // Parse createdAt
+                            String createdAtStr = taskDoc.getString("createdAt");
+                            if (createdAtStr != null) {
+                                try {
+                                    task.setCreatedAt(java.time.LocalDateTime.parse(createdAtStr));
+                                } catch (Exception e) {
+                                    // DateTime parsing failed, leave as null
+                                }
+                            }
+                            
+                            space.getSpaceTasks().add(task);
+                        }
+                    }
+                }
+                
                 spaces.add(space);
             }
         } catch (Exception e) {

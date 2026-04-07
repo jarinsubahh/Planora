@@ -139,7 +139,8 @@ public class UserManager {
             }
 
             DatabaseManager.getUsersCollection().deleteOne(Filters.eq("username", username));
-            SpaceManager.removeUserFromAllSpacesLocal(username);
+            // Remove user from all spaces in cloud
+            SpaceManager.removeUserFromAllSpaces(username);
             logout();
             return true;
         } catch (Exception e) {
@@ -152,5 +153,44 @@ public class UserManager {
     // Keep this empty or remove calls to it to stop using local files
     public static Map<String, String> getUsers() {
         return new HashMap<>();
+    }
+
+    /**
+     * Check if email exists in the system
+     */
+    public static boolean emailExists(String email) {
+        if (email == null || !DatabaseManager.isConnected()) {
+            return false;
+        }
+        try {
+            Document user = DatabaseManager.getUsersCollection()
+                    .find(Filters.eq("email", email))
+                    .first();
+            return user != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Update password using email (for forgot password flow)
+     */
+    public static boolean updatePassword(String email, String newPassword) {
+        if (email == null || newPassword == null) {
+            return false;
+        }
+        if (!DatabaseManager.isConnected()) {
+            return false;
+        }
+        try {
+            DatabaseManager.getUsersCollection().updateOne(
+                    Filters.eq("email", email),
+                    Updates.set("password", newPassword));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

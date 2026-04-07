@@ -141,14 +141,24 @@ public class AddTaskController {
             if (currentSpace != null) {
                 currentSpace.getSpaceTasks().remove(taskToEdit);
                 currentSpace.getSpaceTasks().add(task);
-                SpaceManager.saveToFile();
+                // Save to MongoDB (cloud-first)
+                if (DatabaseManager.isConnected()) {
+                    new Thread(() -> DatabaseManager.saveSpace(currentSpace)).start();
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                }
             } else {
                 TaskService.updateTask(task);
             }
         } else {
             if (currentSpace != null) {
                 currentSpace.getSpaceTasks().add(task);
-                SpaceManager.saveToFile();
+                // Save to MongoDB (cloud-first)
+                if (DatabaseManager.isConnected()) {
+                    new Thread(() -> DatabaseManager.saveSpace(currentSpace)).start();
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                }
             } else {
                 TaskService.createTask(task, UserManager.currentUser);
             }

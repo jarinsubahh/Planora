@@ -110,13 +110,8 @@ public class InvitationManager {
                 }
             }
 
-            // Reload spaces locally
-            Space space = SpaceManager.getSpaceByName(spaceName);
-
-            if (space != null && !space.getMembers().contains(username)) {
-                space.getMembers().add(username);
-                SpaceManager.saveToFile();
-            }
+            // Reload spaces from cloud and update local cache
+            SpaceManager.loadSpacesFromMongoDB();
 
             System.out.println("Invitation accepted: " + username + " joined " + spaceName);
         } catch (Exception e) {

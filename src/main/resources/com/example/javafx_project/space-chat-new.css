@@ -38,21 +38,62 @@
     -fx-text-fill: #6a4c93;
 }
 
-/* --- Clean Up the Container --- */
+/* Messages Container */
 .messages-container {
-    -fx-background-color: transparent; /* Ensures the scroll area doesn't have sharp edges */
-    -fx-padding: 15;
+    -fx-padding: 12;
+    -fx-background-color: transparent;
 }
 
+.message-row {
+    -fx-padding: 5 10;
+    -fx-background-color: transparent;
+}
+
+.avatar-circle {
+    -fx-min-width: 35;
+    -fx-min-height: 35;
+    -fx-max-width: 35;
+    -fx-max-height: 35;
+    -fx-background-color: #9370DB;
+    -fx-background-radius: 50;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+.chat-bubble-card {
+    -fx-padding: 10 15;
+    -fx-max-width: 250;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-font-size: 13;
+}
+
+.my-message {
+    -fx-background-color: linear-gradient(to bottom right, #BA55D3, #9370DB);
+    -fx-text-fill: white;
+    -fx-background-radius: 20 20 2 20;
+}
+
+.other-message {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #333333;
+    -fx-background-radius: 20 20 20 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+/* --- Message Bubble - Sent (Your Messages) --- */
 .sent-bubble {
-    -fx-background-color: #BA55D3; /* Solid color for the card */
-    -fx-background-radius: 20 20 2 20; /* Rounded corners with one small tail */
+    -fx-background-color: #BA55D3;
+    -fx-background-radius: 20 20 2 20;
     -fx-padding: 10 14;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 0, 2);
-    /* This ensures no sharp edges \"protrude\" behind the rounded part */
     -fx-background-insets: 0;
 }
 
+/* --- Message Bubble - Received (Others) --- */
 .received-bubble {
     -fx-background-color: #f0f0f0;
     -fx-background-radius: 20 20 20 2;
@@ -63,13 +104,14 @@
 
 /* --- Inner Text Styling --- */
 .message-bubble {
-    -fx-background-color: transparent; /* Removes the inner \"oval\" */
-    -fx-text-fill: white; /* For sent messages */
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
     -fx-font-size: 13;
+    -fx-wrap-text: true;
 }
 
 .received-bubble .message-bubble {
-    -fx-text-fill: #333333; /* For received messages */
+    -fx-text-fill: #333333;
 }
 
 .message-sender {
@@ -79,48 +121,17 @@
     -fx-opacity: 0.9;
 }
 
+.message-time {
+    -fx-font-size: 10;
+    -fx-text-fill: #999;
+    -fx-opacity: 0.75;
+}
+
 /* Scroll Pane */
 #chatScrollPane {
-    -fx-background: transparent;
     -fx-background-color: transparent;
     -fx-control-inner-background: transparent;
     -fx-padding: 0;
-}
-
-/* --- Info Popup Card --- */
-.info-popup-card {
-    -fx-background-color: rgba(245, 241, 255, 0.85);
-    -fx-background-radius: 25;
-    -fx-border-radius: 25;
-    -fx-border-color: rgba(186, 85, 211, 0.4);
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.6), 25, 0.5, 0, 0);
-}
-
-.info-text-main {
-    -fx-font-size: 15;
-    -fx-text-fill: #4b0082;
-    -fx-font-weight: bold;
-}
-
-.info-text-sub {
-    -fx-font-size: 13;
-    -fx-text-fill: #2d2d2d;
-}
-
-.info-close-button {
-    -fx-background-color: linear-gradient(to bottom, #ba55d3, #9370db);
-    -fx-text-fill: white;
-    -fx-background-radius: 15;
-    -fx-padding: 8 20;
-    -fx-cursor: hand;
-    -fx-font-weight: bold;
-}
-
-.info-close-button:hover {
-    -fx-effect: dropshadow(gaussian, rgba(186, 85, 211, 0.5), 10, 0, 0, 0);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
 }
 
 #chatScrollPane:hover {

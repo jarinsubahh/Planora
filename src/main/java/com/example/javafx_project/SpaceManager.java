@@ -1,118 +1,125 @@
 package com.example.javafx_project;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Cloud-first Space Manager
+ * All operations are performed directly on MongoDB.
+ * No local file caching - always fetch fresh data from cloud.
+ */
 public class SpaceManager {
-    private static final String FILE_PATH = "spaces.dat";
-    private static List<Space> allSpaces = new ArrayList<>();
-    private static boolean initializedFromMongo = false;
-
-    public static void addSpace(Space space) {
-        if (allSpaces.isEmpty()) loadFromFile();
-        allSpaces.add(space);
-        saveToFile();
-        
-        // Also save to MongoDB if connected (asynchronously to avoid lag)
-        if (DatabaseManager.isConnected()) {
-            new Thread(() -> DatabaseManager.saveSpace(space)).start();
-        }
-    }
-
-    public static List<Space> getAllSpaces() {
-        // Try to get from MongoDB first if connected and not yet initialized
-        if (DatabaseManager.isConnected() && !initializedFromMongo) {
-            List<Space> mongoSpaces = DatabaseManager.getAllSpaces();
-            if (!mongoSpaces.isEmpty()) {
-                allSpaces = mongoSpaces;
-                initializedFromMongo = true;
-                return mongoSpaces;
-            }
-        }
-        
-        // If already initialized from MongoDB, return cached version
-        if (initializedFromMongo) {
-            return allSpaces;
-        }
-        
-        // Fallback to local file system
-        if (allSpaces.isEmpty()) loadFromFile();
-        return allSpaces;
-    }
-
-    public static Space getSpaceByName(String spaceName) {
-        return getAllSpaces().stream()
-                .filter(s -> s.getSpaceName().equals(spaceName))
-                .findFirst()
-                .orElse(null);
-    }
 
     /**
-     * Removes the user from all local spaces: deletes spaces they admin,
-     * or removes them from member lists. Persists to {@code spaces.dat}.
+     * Create a new space in MongoDB
      */
-    public static void removeUserFromAllSpacesLocal(String username) {
-        if (username == null) {
+    public static void addSpace(Space space) {
+        if (!DatabaseManager.isConnected()) {
+            System.err.println("MongoDB not connected. Cannot add space.");
             return;
         }
-        if (allSpaces.isEmpty()) {
-            loadFromFile();
+        
+        try {
+            DatabaseManager.saveSpace(space);
+            System.out.println("Space created: " + space.getSpaceName());
+        } catch (Exception e) {
+            System.err.println("Error adding space: " + e.getMessage());
         }
-        List<Space> toRemove = new ArrayList<>();
-        for (Space space : new ArrayList<>(allSpaces)) {
-            if (username.equals(space.getAdminUsername())) {
-                toRemove.add(space);
-            } else {
-                space.getMembers().removeIf(m -> m.equals(username));
-            }
-        }
-        allSpaces.removeAll(toRemove);
-        saveToFile();
     }
 
-    public static void deleteSpace(String spaceName) {
-        // Remove from local list
-        allSpaces.removeIf(s -> s.getSpaceName().equals(spaceName));
-        saveToFile();
-
-        // Delete from MongoDB if connected
-        if (DatabaseManager.isConnected()) {
-            new Thread(() -> DatabaseManager.deleteSpace(spaceName)).start();
+    /**
+     * Get all spaces from MongoDB (cloud-first, always fresh)
+     */
+    public static List<Space> getAllSpaces() {
+        if (!DatabaseManager.isConnected()) {
+            System.err.println("MongoDB not connected. Cannot retrieve spaces.");
+            return new ArrayList<>();
         }
         
-        System.out.println("Space deleted: " + spaceName);
-    }
-
-    public static void saveToFile() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
-            oos.writeObject(allSpaces);
-        } catch (IOException e) {
-            e.printStackTrace();
+        try {
+            return DatabaseManager.getAllSpaces();
+        } catch (Exception e) {
+            System.err.println("Error retrieving spaces: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
-    public static void loadFromFile() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return;
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
-            Object obj = ois.readObject();
-            if (obj instanceof List<?>) {
-                List<Space> loaded = new ArrayList<>();
-                for (Object item : (List<?>) obj) {
-                    if (item instanceof Space) {
-                        loaded.add((Space) item);
+    /**
+     * Get a specific space by name from MongoDB
+     */
+    public static Space getSpaceByName(String spaceName) {
+        if (!DatabaseManager.isConnected()) {
+            System.err.println("MongoDB not connected. Cannot retrieve space.");
+            return null;
+        }
+        
+        try {
+            return getAllSpaces().stream()
+                    .filter(s -> s.getSpaceName().equals(spaceName))
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            System.err.println("Error getting space by name: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Remove user from all spaces in MongoDB
+     */
+    public static void removeUserFromAllSpaces(String username) {
+        if (username == null || !DatabaseManager.isConnected()) {
+            return;
+        }
+        
+        try {
+            List<Space> spaces = getAllSpaces();
+            List<String> spacesToDelete = new ArrayList<>();
+            
+            for (Space space : spaces) {
+                if (username.equals(space.getAdminUsername())) {
+                    // Delete space if user is admin
+                    spacesToDelete.add(space.getSpaceName());
+                } else {
+                    // Remove user from members
+                    if (space.getMembers().contains(username)) {
+                        space.getMembers().remove(username);
+                        DatabaseManager.saveSpace(space);
                     }
                 }
-                allSpaces = loaded;
             }
+            
+            // Delete spaces where user is admin
+            for (String spaceName : spacesToDelete) {
+                DatabaseManager.deleteSpace(spaceName);
+            }
+            
+            System.out.println("User removed from all spaces: " + username);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error removing user from spaces: " + e.getMessage());
         }
     }
-    
+
     /**
-     * Reload all spaces from MongoDB (useful when spaces are updated by other users/operations)
+     * Delete a space from MongoDB
+     */
+    public static void deleteSpace(String spaceName) {
+        if (!DatabaseManager.isConnected()) {
+            System.err.println("MongoDB not connected. Cannot delete space.");
+            return;
+        }
+        
+        try {
+            DatabaseManager.deleteSpace(spaceName);
+            System.out.println("Space deleted: " + spaceName);
+        } catch (Exception e) {
+            System.err.println("Error deleting space: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Reload all spaces from MongoDB
+     * (useful when spaces are updated by other users/operations)
      */
     public static void loadSpacesFromMongoDB() {
         if (!DatabaseManager.isConnected()) {
@@ -121,37 +128,26 @@ public class SpaceManager {
         }
 
         try {
-            List<Space> mongoSpaces = DatabaseManager.getAllSpaces();
-            if (!mongoSpaces.isEmpty()) {
-                allSpaces = mongoSpaces;
-                initializedFromMongo = true;
-                saveToFile(); // Keep local cache in sync
-                System.out.println("Spaces reloaded from MongoDB: " + allSpaces.size() + " spaces");
-            }
+            List<Space> mongoSpaces = getAllSpaces();
+            System.out.println("Spaces reloaded from MongoDB: " + mongoSpaces.size() + " spaces");
         } catch (Exception e) {
             System.err.println("Error reloading spaces from MongoDB: " + e.getMessage());
         }
     }
     
     /**
-     * Migrate all local spaces to MongoDB (call once)
+     * @deprecated Use addSpace() instead - everything is now cloud-based
      */
-    public static void migrateSpacesToCloud() {
-        if (!DatabaseManager.isConnected()) {
-            System.err.println("Cannot migrate: MongoDB not connected");
-            return;
-        }
-        
-        new Thread(() -> {
-            loadFromFile();
-            for (Space space : allSpaces) {
-                try {
-                    DatabaseManager.saveSpace(space);
-                } catch (Exception e) {
-                    System.err.println("Error migrating space: " + e.getMessage());
-                }
-            }
-            System.out.println("Spaces migration to MongoDB completed!");
-        }).start();
+    @Deprecated
+    public static void saveToFile() {
+        System.out.println("Note: saveToFile() is deprecated. All data is now stored in MongoDB.");
+    }
+
+    /**
+     * @deprecated Local file storage is no longer used - everything is cloud-based
+     */
+    @Deprecated
+    public static void loadFromFile() {
+        System.out.println("Note: loadFromFile() is deprecated. All data is now stored in MongoDB.");
     }
 }
