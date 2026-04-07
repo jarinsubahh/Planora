@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="Infinity" maxWidth="Infinity" prefHeight="700.0" prefWidth="1200.0" opacity="0.0" styleClass="settings-root" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SettingsController">
+<BorderPane fx:id="rootPane" maxHeight="Infinity" maxWidth="Infinity" opacity="0.0" prefHeight="700.0" prefWidth="1200.0" styleClass="settings-root" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SettingsController">
    <top>
       <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="settings-header">
          <children>
@@ -81,7 +81,7 @@
                   </VBox>
                   <VBox fx:id="deletePanel" spacing="12.0" styleClass="glass-panel">
                      <children>
-                        <Label styleClass="panel-title" text="Danger zone" />
+                        <Label styleClass="panel-title" text="DELETE YOUR ACCOUNT" />
                         <Label styleClass="field-label" text="Permanently delete your account and related data. This cannot be undone." wrapText="true" />
                         <HBox alignment="CENTER_LEFT">
                            <children>

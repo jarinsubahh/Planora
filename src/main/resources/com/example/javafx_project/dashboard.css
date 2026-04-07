@@ -60,13 +60,18 @@
 
 .greeting {
     -fx-font-size: 22px;
-    -fx-font-weight: 600;
+    -fx-font-weight: 800;
     -fx-text-fill: linear-gradient(to right, #FF7AB6, #6C8BFF);
 }
 
 .date {
-    -fx-font-size: 12px;
-    -fx-text-fill: #888888;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7A73FF;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.4), 8, 0.2, 0, 2);
+    -fx-padding: 5 10;
+    -fx-background-color: rgba(122, 115, 255, 0.08);
+    -fx-background-radius: 8;
 }
 
 /* Progress Indicator */
@@ -279,6 +284,7 @@
     -fx-padding: 8 18;
 }
 
+
 /* Calendar (month navigation + grid) */
 .calendar-month-label {
     -fx-font-size: 20px;
@@ -287,23 +293,96 @@
 }
 
 .calendar-weekday-label {
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #7A73FF;
+    -fx-padding: 8 4;
 }
 
 .calendar-day-number {
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
     -fx-text-fill: #2E2E3A;
 }
 
 .calendar-date-cell {
     -fx-background-color: #FFFFFF;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.1), 5, 0, 0, 1);
+    -fx-min-width: 90px;
+    -fx-min-height: 90px;
+    -fx-pref-width: 90px;
+    -fx-pref-height: 90px;
 }
 
 .calendar-date-cell:hover {
-    -fx-background-color: #F0EEF8;
+    -fx-background-color: #F5F3FF;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.25), 8, 0, 0, 2);
+}
+
+/* Date with tasks - Purple glassy background */
+.calendar-date-cell-with-task {
+    -fx-background-color: rgba(122, 115, 255, 0.2);
+    -fx-border-color: rgba(122, 115, 255, 0.3);
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.3), 8, 0, 0, 2);
+}
+
+.calendar-date-cell-with-task:hover {
+    -fx-background-color: rgba(122, 115, 255, 0.3);
+    -fx-border-color: rgba(122, 115, 255, 0.5);
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.5), 12, 0, 0, 3);
+}
+
+
+/* Filter Panel Styles */
+.filter-panel {
+    -fx-background-color: #F5F3FA;
+    -fx-border-color: #E8E6FA;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-pref-width: 140;
+    -fx-spacing: 8;
+}
+
+.filter-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5A5A7A;
+    -fx-padding: 0 0 5 0;
+}
+
+.category-filter-button {
+    -fx-background-color: #E8E6FA;
+    -fx-text-fill: #5A5A7A;
+    -fx-background-radius: 12;
+    -fx-padding: 8 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-pref-width: 120;
+    -fx-text-alignment: center;
+}
+
+.category-filter-button:hover {
+    -fx-background-color: #D8D4F0;
+    -fx-text-fill: #6C63FF;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.2), 8, 0, 0, 2);
+}
+
+.category-filter-selected {
+    -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.4), 10, 0, 0, 2);
+}
+
+.category-filter-selected:hover {
+    -fx-background-color: linear-gradient(to right, #6A63FF, #FF5FA5);
+    -fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.6), 12, 0, 0, 3);
 }

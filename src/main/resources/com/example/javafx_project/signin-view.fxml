@@ -24,11 +24,11 @@
         <!-- Headings -->
         <VBox alignment="CENTER" spacing="5">
             <Label styleClass="header-text" text="Welcome Back" />
-            <Label styleClass="subtitle-text" text="Time to Glow and Grow" />
+            <Label prefHeight="20.0" prefWidth="174.0" styleClass="subtitle-text" text="    Time to Glow and Grow" />
         </VBox>
 
         <!-- Back link -->
-        <Button onAction="#handleBackToHome" styleClass="back-link" text="← Back to Home" />
+        <Button onAction="#handleBackToHome" prefHeight="27.0" prefWidth="331.0" styleClass="back-link" text="← Back to Home" />
 
         <!-- Input fields -->
         <VBox maxWidth="300" spacing="15">
@@ -41,7 +41,7 @@
                 <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="auth-input" />
             </VBox>
         </VBox>
-       <javafx.scene.control.Hyperlink onAction="#handleForgotPassword" style="-fx-text-fill: #FF7AC6; -fx-font-weight: 800; -fx-underline: false;" text="Forgot password?" />
+       <javafx.scene.control.Hyperlink onAction="#handleForgotPassword" prefHeight="24.0" prefWidth="209.0" style="-fx-text-fill: #FF7AC6; -fx-font-weight: 800; -fx-underline: false;" text="Forgot password?" />
 
         <!-- Sign In button -->
         <Button fx:id="signInSubmitBtn" maxWidth="300" onAction="#onLoginButtonClick" styleClass="btn-gradient" text="Sign In ✨" />

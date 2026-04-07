@@ -34,7 +34,7 @@
                <children>
                   <VBox>
                      <children>
-                        <Label fx:id="greeting" styleClass="greeting" text="" />
+                        <Label styleClass="greeting" text="Good Morning, Planner ❄" />
                         <Label fx:id="headerDateLabel" styleClass="date" text="" />
                      </children>
                   </VBox>

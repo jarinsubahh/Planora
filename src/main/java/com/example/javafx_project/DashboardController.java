@@ -61,7 +61,11 @@ public class DashboardController {
     @FXML
     private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn, settingsBtn;
 
+    @FXML
+    private Button filterAllBtn, filterStudyBtn, filterWorkBtn, filterPersonalBtn, filterHealthBtn, filterOtherBtn;
+
     private List<Task> currentTasks;
+    private String selectedCategory = "All";
 
     // Calendar integration helpers
     private java.util.List<javafx.scene.Node> originalMainChildren;
@@ -73,9 +77,16 @@ public class DashboardController {
         // capture original main content children so calendar can replace and restore
         originalMainChildren = new java.util.ArrayList<>(mainContent.getChildren());
         updateHeaderDate();
+        updateGreeting();
         // All data is now loaded directly from cloud on-demand
         setTaskSectionHeading("✿ Today's Tasks");
         loadTasks();
+    }
+
+    private void updateGreeting() {
+        if (greeting != null && UserManager.currentUser != null) {
+            greeting.setText("Good Morning, " + UserManager.currentUser + " ❄");
+        }
     }
 
     private void updateHeaderDate() {
@@ -166,47 +177,183 @@ public class DashboardController {
         mainContent.getChildren().add(calendarPageRoot);
     }
 
-    private void buildCalendarView() {
-        // Header
-        HBox header = new HBox(20);
-        header.setAlignment(Pos.CENTER);
+//    private void buildCalendarView() {
+//        // Header
+//        HBox header = new HBox(20);
+//        header.setAlignment(Pos.CENTER);
+//
+//        Button prev = new Button("<");
+//        Button next = new Button(">");
+//        Label monthLabel = new Label();
+//        monthLabel.getStyleClass().add("calendar-month-label");
+//        monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
+//
+//        prev.setOnAction(e -> {
+//            currentYearMonth = currentYearMonth.minusMonths(1);
+//            monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
+//            buildCalendarGrid();
+//        });
+//        next.setOnAction(e -> {
+//            currentYearMonth = currentYearMonth.plusMonths(1);
+//            monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
+//            buildCalendarGrid();
+//        });
+//
+//        header.getChildren().addAll(prev, monthLabel, next);
+//
+//        // Calendar grid container
+//        calendarGrid = new GridPane();
+//        calendarGrid.setHgap(20);
+//        calendarGrid.setVgap(20);
+//        calendarGrid.setPadding(new Insets(20));
+//
+//        ScrollPane calendarScroll = new ScrollPane(calendarGrid);
+//        calendarScroll.setFitToWidth(true);
+//        calendarScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+//        calendarScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+//
+//        // Assemble
+//        calendarPageRoot.getChildren().clear();
+//        calendarPageRoot.getChildren().addAll(header, calendarScroll);
+//
+//        buildCalendarGrid();
+//    }
+//
+//    private void buildCalendarGrid() {
+//        calendarGrid.getChildren().clear();
+//
+//        // Weekday headers
+//        String[] days = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+//        for (int i = 0; i < 7; i++) {
+//            Label l = new Label(days[i]);
+//            l.getStyleClass().add("calendar-weekday-label");
+//            calendarGrid.add(l, i, 0);
+//            GridPane.setHalignment(l, javafx.geometry.HPos.CENTER);
+//        }
+//
+//        java.time.LocalDate firstDay = currentYearMonth.atDay(1);
+//        int startIndex = firstDay.getDayOfWeek().getValue() % 7; // Sunday=0
+//        int length = currentYearMonth.lengthOfMonth();
+//
+//        int rowOffset = 1;
+//        int day = 1;
+//        int totalCells = startIndex + length;
+//        int rows = (int) Math.ceil(totalCells / 7.0);
+//
+//        for (int r = 0; r < rows; r++) {
+//            for (int c = 0; c < 7; c++) {
+//                int cellIndex = r * 7 + c;
+//                if (cellIndex < startIndex || day > length) {
+//                    StackPane empty = new StackPane();
+//                    empty.setPrefSize(80, 80);
+//                    calendarGrid.add(empty, c, r + rowOffset);
+//                } else {
+//                    java.time.LocalDate date = currentYearMonth.atDay(day);
+//
+//                    StackPane dateCell = new StackPane();
+//                    dateCell.setPrefSize(80, 80);
+//                    dateCell.getStyleClass().add("calendar-date-cell");
+//
+//                    VBox content = new VBox(6);
+//                    content.setAlignment(Pos.CENTER);
+//                    Label dayLabel = new Label(String.valueOf(day));
+//                    dayLabel.getStyleClass().add("calendar-day-number");
+//
+//                    if (hasTaskOnDate(date)) {
+//                        Circle dot = new Circle(3, javafx.scene.paint.Color.web("#7A73FF"));
+//                        content.getChildren().addAll(dayLabel, dot);
+//                    } else {
+//                        content.getChildren().add(dayLabel);
+//                    }
+//
+//                    dateCell.getChildren().add(content);
+//
+//                    // Click -> show tasks for this date (replace calendar)
+//                    dateCell.setOnMouseClicked(ev -> showTasksForDate(date));
+//
+//                    calendarGrid.add(dateCell, c, r + rowOffset);
+//                    day++;
+//                }
+//            }
+//        }
+//    }
+//
+//    private void showTasksForDate(java.time.LocalDate date) {
+//        // Clear calendar and show task view
+//        calendarPageRoot.getChildren().clear();
+//
+//        Label title = new Label("Tasks for " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMMM d")));
+//        title.getStyleClass().add("task-title");
+//
+//        VBox tasksArea = new VBox(10);
+//        tasksArea.setPadding(new Insets(10));
+//
+//        // Only show pending (not completed) tasks for the selected date
+//        List<Task> tasks = TaskService.getTasksByUser(UserManager.currentUser).stream()
+//                .filter(t -> t.getDeadline() != null && t.getDeadline().equals(date) && !t.isCompleted())
+//                .toList();
+//
+//        if (tasks.isEmpty()) {
+//            Label empty = new Label("No tasks scheduled for this date.");
+//            empty.setStyle("-fx-text-fill: #666; -fx-font-size: 14px;");
+//            tasksArea.setAlignment(Pos.CENTER);
+//            tasksArea.getChildren().add(empty);
+//        } else {
+//            for (Task t : tasks) {
+//                tasksArea.getChildren().add(createTaskCard(t));
+//            }
+//        }
+//
+//        // Add a spacer and the tasks
+//        calendarPageRoot.getChildren().addAll(title, tasksArea);
+//    }
+//
+//    private boolean hasTaskOnDate(java.time.LocalDate date) {
+//        // Only consider tasks that are not completed
+//        return TaskService.getTasksByUser(UserManager.currentUser).stream()
+//                .anyMatch(t -> t.getDeadline() != null && t.getDeadline().equals(date) && !t.isCompleted());
+//    }
+private void buildCalendarView() {
+    // Header
+    HBox header = new HBox(20);
+    header.setAlignment(Pos.CENTER);
 
-        Button prev = new Button("<");
-        Button next = new Button(">");
-        Label monthLabel = new Label();
-        monthLabel.getStyleClass().add("calendar-month-label");
+    Button prev = new Button("<");
+    Button next = new Button(">");
+    Label monthLabel = new Label();
+    monthLabel.getStyleClass().add("calendar-month-label");
+    monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
+
+    prev.setOnAction(e -> {
+        currentYearMonth = currentYearMonth.minusMonths(1);
         monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
-
-        prev.setOnAction(e -> {
-            currentYearMonth = currentYearMonth.minusMonths(1);
-            monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
-            buildCalendarGrid();
-        });
-        next.setOnAction(e -> {
-            currentYearMonth = currentYearMonth.plusMonths(1);
-            monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
-            buildCalendarGrid();
-        });
-
-        header.getChildren().addAll(prev, monthLabel, next);
-
-        // Calendar grid container
-        calendarGrid = new GridPane();
-        calendarGrid.setHgap(20);
-        calendarGrid.setVgap(20);
-        calendarGrid.setPadding(new Insets(20));
-
-        ScrollPane calendarScroll = new ScrollPane(calendarGrid);
-        calendarScroll.setFitToWidth(true);
-        calendarScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        calendarScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        // Assemble
-        calendarPageRoot.getChildren().clear();
-        calendarPageRoot.getChildren().addAll(header, calendarScroll);
-
         buildCalendarGrid();
-    }
+    });
+    next.setOnAction(e -> {
+        currentYearMonth = currentYearMonth.plusMonths(1);
+        monthLabel.setText(currentYearMonth.getMonth().toString() + " " + currentYearMonth.getYear());
+        buildCalendarGrid();
+    });
+
+    header.getChildren().addAll(prev, monthLabel, next);
+
+    // Calendar grid container
+    calendarGrid = new GridPane();
+    calendarGrid.setHgap(20);
+    calendarGrid.setVgap(20);
+    calendarGrid.setPadding(new Insets(20));
+
+    ScrollPane calendarScroll = new ScrollPane(calendarGrid);
+    calendarScroll.setFitToWidth(true);
+    calendarScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    calendarScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+    // Assemble
+    calendarPageRoot.getChildren().clear();
+    calendarPageRoot.getChildren().addAll(header, calendarScroll);
+
+    buildCalendarGrid();
+}
 
     private void buildCalendarGrid() {
         calendarGrid.getChildren().clear();
@@ -234,22 +381,25 @@ public class DashboardController {
                 int cellIndex = r * 7 + c;
                 if (cellIndex < startIndex || day > length) {
                     StackPane empty = new StackPane();
-                    empty.setPrefSize(80, 80);
+                    empty.setPrefSize(80, 80);  // ← Smaller empty cell size (was 80)
                     calendarGrid.add(empty, c, r + rowOffset);
                 } else {
                     java.time.LocalDate date = currentYearMonth.atDay(day);
 
                     StackPane dateCell = new StackPane();
-                    dateCell.setPrefSize(80, 80);
+                    dateCell.setPrefSize(80, 80);  // ← Smaller date cell size (was 80)
                     dateCell.getStyleClass().add("calendar-date-cell");
 
-                    VBox content = new VBox(6);
+                    VBox content = new VBox(5);
                     content.setAlignment(Pos.CENTER);
                     Label dayLabel = new Label(String.valueOf(day));
                     dayLabel.getStyleClass().add("calendar-day-number");
 
                     if (hasTaskOnDate(date)) {
-                        Circle dot = new Circle(3, javafx.scene.paint.Color.web("#7A73FF"));
+                        // Add purple glassy styling class for dates with tasks
+                        dateCell.getStyleClass().add("calendar-date-cell-with-task");
+                        // Add small dot indicator (optional, can be removed if just using color)
+                        Circle dot = new Circle(2.5, javafx.scene.paint.Color.web("#7A73FF"));
                         content.getChildren().addAll(dayLabel, dot);
                     } else {
                         content.getChildren().add(dayLabel);
@@ -266,7 +416,7 @@ public class DashboardController {
             }
         }
     }
-   
+
     private void showTasksForDate(java.time.LocalDate date) {
         // Clear calendar and show task view
         calendarPageRoot.getChildren().clear();
@@ -302,6 +452,7 @@ public class DashboardController {
         return TaskService.getTasksByUser(UserManager.currentUser).stream()
                 .anyMatch(t -> t.getDeadline() != null && t.getDeadline().equals(date) && !t.isCompleted());
     }
+
 
     private void restoreOriginalMainContent() {
         if (originalMainChildren == null) return;
@@ -413,28 +564,37 @@ public class DashboardController {
     }
 
     private void loadTasks() {
+        selectedCategory = "All";
         currentTasks = TaskService.getTasksByUser(UserManager.currentUser);
         List<Task> nonCompletedTasks = currentTasks.stream()
             .filter(t -> !t.isCompleted())
             .toList();
+        currentTasks = nonCompletedTasks;
+        updateFilterButtonsStyle();
         displayTasks(nonCompletedTasks);
-        updateStatisticsFromCache(currentTasks);
+        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void loadTodayTasks() {
+        selectedCategory = "All";
         currentTasks = TaskService.getTodayTasks(UserManager.currentUser);
+        updateFilterButtonsStyle();
         displayTasks(currentTasks);
         updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void loadUpcomingTasks() {
+        selectedCategory = "All";
         currentTasks = TaskService.getUpcomingTasks(UserManager.currentUser);
+        updateFilterButtonsStyle();
         displayTasks(currentTasks);
         updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
 
     private void loadCompletedTasks() {
+        selectedCategory = "All";
         currentTasks = TaskService.getCompletedTasks(UserManager.currentUser);
+        updateFilterButtonsStyle();
         displayTasks(currentTasks);
         updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
     }
@@ -443,6 +603,60 @@ public class DashboardController {
         taskListVBox.getChildren().clear();
         for (Task task : tasks) {
             taskListVBox.getChildren().add(createTaskCard(task));
+        }
+    }
+
+    @FXML
+    private void handleFilterCategory(ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        String buttonText = clickedButton.getText();
+        
+        // Determine the selected category
+        String category = switch (buttonText) {
+            case "All" -> "All";
+            case "📚 Study" -> "Study";
+            case "💼 Work" -> "Work";
+            case "💝 Personal" -> "Personal";
+            case "💪 Health" -> "Health";
+            case "🎯 Other" -> "Other";
+            default -> "All";
+        };
+        
+        selectedCategory = category;
+        updateFilterButtonsStyle();
+        applyFilter();
+    }
+
+    private void updateFilterButtonsStyle() {
+        // Remove selected style from all buttons
+        filterAllBtn.getStyleClass().remove("category-filter-selected");
+        filterStudyBtn.getStyleClass().remove("category-filter-selected");
+        filterWorkBtn.getStyleClass().remove("category-filter-selected");
+        filterPersonalBtn.getStyleClass().remove("category-filter-selected");
+        filterHealthBtn.getStyleClass().remove("category-filter-selected");
+        filterOtherBtn.getStyleClass().remove("category-filter-selected");
+        
+        // Add selected style to the active button
+        Button selectedButton = switch (selectedCategory) {
+            case "All" -> filterAllBtn;
+            case "Study" -> filterStudyBtn;
+            case "Work" -> filterWorkBtn;
+            case "Personal" -> filterPersonalBtn;
+            case "Health" -> filterHealthBtn;
+            case "Other" -> filterOtherBtn;
+            default -> filterAllBtn;
+        };
+        selectedButton.getStyleClass().add("category-filter-selected");
+    }
+
+    private void applyFilter() {
+        if (selectedCategory.equals("All")) {
+            displayTasks(currentTasks);
+        } else {
+            List<Task> filtered = currentTasks.stream()
+                .filter(task -> task.getCategory() != null && task.getCategory().equals(selectedCategory))
+                .toList();
+            displayTasks(filtered);
         }
     }
 
