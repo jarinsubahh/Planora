@@ -129,7 +129,7 @@ public class SettingsController {
         try {
             Stage stage = (Stage) backButton.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/dashboard-view.fxml"));
-            Scene scene = new Scene(loader.load(), 1000, 600);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();
@@ -240,7 +240,7 @@ public class SettingsController {
         try {
             Stage stage = (Stage) backButton.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/signin-view.fxml"));
-            Scene scene = new Scene(loader.load(), 1000, 600);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();

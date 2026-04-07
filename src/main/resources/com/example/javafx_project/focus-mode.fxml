@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="focus-root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.FocusModeController">
+<StackPane prefHeight="700.0" prefWidth="1200.0" styleClass="focus-root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.FocusModeController">
 
-    <VBox alignment="TOP_CENTER" prefHeight="600" prefWidth="1000" spacing="25">
+    <VBox alignment="TOP_CENTER" prefHeight="700" prefWidth="1200" spacing="25">
 
         <!-- TOP -->
         <HBox alignment="CENTER_LEFT" prefWidth="750">
@@ -42,7 +42,7 @@
     <!-- FOCUS SESSION (overlayed as sibling so it centers on the window) -->
     <StackPane fx:id="focusPane" maxHeight="-1" maxWidth="-1" styleClass="focus-container" visible="false">
 
-        <Pane fx:id="animationPane" mouseTransparent="true" prefHeight="600" prefWidth="1000" />
+        <Pane fx:id="animationPane" mouseTransparent="true" prefHeight="700" prefWidth="1200" />
 
         <VBox alignment="CENTER" spacing="15" style="-fx-padding: 40;">
             <Label fx:id="taskTitleLabel" styleClass="task-title-label" />

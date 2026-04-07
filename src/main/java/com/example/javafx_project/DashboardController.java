@@ -389,7 +389,7 @@ public class DashboardController {
         }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
-            Scene scene = new Scene(loader.load(), 900, 650);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
 
             AddTaskController controller = loader.getController();
@@ -530,7 +530,7 @@ public class DashboardController {
     private void handleEditTask(Task task) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
-            Scene scene = new Scene(loader.load(), 900, 650);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
 
             AddTaskController controller = loader.getController();
@@ -726,57 +726,79 @@ public class DashboardController {
 
     private void showSpaceDetails(Space space) {
         this.currentActiveSpace = space;
-        mainContent.getChildren().clear();
-
-        Label title = new Label(space.getSpaceName());
-        title.getStyleClass().add("greeting");
-
-        Button backBtn = new Button("← Back");
-        backBtn.getStyleClass().add("delete-button");
-        backBtn.setOnAction(e -> showSpaceList());
-
-        Button addTaskBtn = new Button("+ Task");
-        addTaskBtn.getStyleClass().add("add-space-btn");
-        addTaskBtn.setOnAction(e -> handleAddTask());
-
-        Button inviteBtn = new Button("👤 Invite");
-        inviteBtn.getStyleClass().add("invite-button");
-        inviteBtn.setOnAction(e -> handleInvite(space));
-
-        // ADMIN CHECK
-        boolean isAdmin = space.isAdmin(UserManager.currentUser);
-        addTaskBtn.setVisible(isAdmin);
-        inviteBtn.setVisible(isAdmin);
-
-        HBox actionHeader = new HBox(15, backBtn, title, addTaskBtn, inviteBtn);
         
-        // Add delete button for admin only
-        if (isAdmin) {
-            Button deleteSpaceBtn = new Button("🗑 Delete Space");
-            deleteSpaceBtn.setStyle(
-                "-fx-background-color: rgba(244, 67, 54, 0.8);" +
-                "-fx-text-fill: white;" +
-                "-fx-padding: 8 15;" +
-                "-fx-font-size: 12;" +
-                "-fx-font-weight: bold;" +
-                "-fx-background-radius: 15;" +
-                "-fx-cursor: hand;" +
-                "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
-            );
-            deleteSpaceBtn.setOnAction(e -> handleDeleteSpace(space));
-            actionHeader.getChildren().add(deleteSpaceBtn);
-        }
-        
-        actionHeader.setAlignment(Pos.CENTER_LEFT);
+        // Load the new FXML with space content + chat
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/space-with-chat.fxml"));
+            javafx.scene.Parent spaceWithChatRoot = loader.load();
+            spaceWithChatRoot.getStylesheets().add(getClass().getResource("/com/example/javafx_project/space-chat.css").toExternalForm());
 
-        VBox taskArea = new VBox(15);
-        if (space.getSpaceTasks() != null) {
-            for(Task t : space.getSpaceTasks()) {
-                taskArea.getChildren().add(createSpaceSpecificCard(t, space));
+            ChatController chatController = loader.getController();
+            chatController.setSpace(space);
+
+            // Get the space content container from FXML
+            VBox spaceContentContainer = (VBox) spaceWithChatRoot.lookup("#spaceContentContainer");
+
+            // Build space UI and add to container
+            Label title = new Label(space.getSpaceName());
+            title.getStyleClass().add("greeting");
+
+            Button backBtn = new Button("← Back");
+            backBtn.getStyleClass().add("delete-button");
+            backBtn.setOnAction(e -> showSpaceList());
+
+            Button addTaskBtn = new Button("+ Task");
+            addTaskBtn.getStyleClass().add("add-space-btn");
+            addTaskBtn.setOnAction(e -> handleAddTask());
+
+            Button inviteBtn = new Button("👤 Invite");
+            inviteBtn.getStyleClass().add("invite-button");
+            inviteBtn.setOnAction(e -> handleInvite(space));
+
+            // ADMIN CHECK
+            boolean isAdmin = space.isAdmin(UserManager.currentUser);
+            addTaskBtn.setVisible(isAdmin);
+            inviteBtn.setVisible(isAdmin);
+
+            HBox actionHeader = new HBox(15, backBtn, title, addTaskBtn, inviteBtn);
+            
+            // Add delete button for admin only
+            if (isAdmin) {
+                Button deleteSpaceBtn = new Button("🗑 Delete Space");
+                deleteSpaceBtn.setStyle(
+                    "-fx-background-color: rgba(244, 67, 54, 0.8);" +
+                    "-fx-text-fill: white;" +
+                    "-fx-padding: 8 15;" +
+                    "-fx-font-size: 12;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-background-radius: 15;" +
+                    "-fx-cursor: hand;" +
+                    "-fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.4), 8, 0, 0, 1);"
+                );
+                deleteSpaceBtn.setOnAction(e -> handleDeleteSpace(space));
+                actionHeader.getChildren().add(deleteSpaceBtn);
             }
-        }
+            
+            actionHeader.setAlignment(Pos.CENTER_LEFT);
 
-        mainContent.getChildren().addAll(actionHeader, taskArea);
+            VBox taskArea = new VBox(15);
+            if (space.getSpaceTasks() != null) {
+                for(Task t : space.getSpaceTasks()) {
+                    taskArea.getChildren().add(createSpaceSpecificCard(t, space));
+                }
+            }
+
+            spaceContentContainer.getChildren().addAll(actionHeader, taskArea);
+            
+            // Replace main content with space+chat view
+            mainContent.getChildren().clear();
+            mainContent.getChildren().add(spaceWithChatRoot);
+            VBox.setVgrow(spaceWithChatRoot, Priority.ALWAYS);
+            
+        } catch (IOException e) {
+            System.err.println("Error loading space with chat: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -804,6 +826,8 @@ public class DashboardController {
         
         if (confirmAlert.showAndWait().get() == ButtonType.OK) {
             SpaceManager.deleteSpace(space.getSpaceName());
+            // Also delete all messages for this space
+            DatabaseManager.deleteMessagesBySpaceId(space.getSpaceName());
             new Alert(Alert.AlertType.INFORMATION, "Space deleted successfully!").show();
             showSpaceList();
         }
@@ -916,7 +940,7 @@ public class DashboardController {
     private void handleEditSpaceTask(Task task, Space space) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/addTask-view.fxml"));
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/addTask.css").toExternalForm());
 
             AddTaskController controller = loader.getController();

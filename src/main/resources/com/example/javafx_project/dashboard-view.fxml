@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane prefHeight="600.0" prefWidth="1000.0" styleClass="dashboard-root" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.DashboardController">
+<BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="dashboard-root" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.DashboardController">
    <left>
-      <VBox prefHeight="600.0" prefWidth="180.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+      <VBox prefHeight="700.0" prefWidth="180.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
             <Label styleClass="logo" text="✨ PLANORA" />
             <Button fx:id="dashboardBtn" onAction="#handleDashboard" styleClass="sidebar-button, sidebar-button-active" text="🏠 Dashboard" />
@@ -39,14 +39,14 @@
                      </children>
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
+                  <StackPane prefHeight="61.0" prefWidth="135.0">
+                     <children>
+                        <Circle fill="transparent" radius="27.5" stroke="#7A73FF" strokeWidth="6.0" />
+                        <Label styleClass="progress-text" text="0%" />
+                     </children>
+                  </StackPane>
                   <HBox alignment="CENTER_RIGHT" spacing="15.0">
                      <children>
-                        <StackPane>
-                           <children>
-                              <Circle fill="transparent" radius="27.5" stroke="#7A73FF" strokeWidth="6.0" />
-                              <Label styleClass="progress-text" text="0%" />
-                           </children>
-                        </StackPane>
                         <Button onAction="#handleAddTask" styleClass="add-task-button" text="+ Add Task" />
                      </children>
                   </HBox>
@@ -54,7 +54,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="80.0" styleClass="stats-row">
                <children>
-                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="119.0" spacing="10.0" styleClass="stats-card">
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="191.0" spacing="10.0" styleClass="stats-card">
                      <children>
                         <Label styleClass="stats-icon" text="📅" />
                         <Label fx:id="todayStatsLabel" styleClass="stats-number" text="0" />
@@ -68,14 +68,14 @@
                         <Label styleClass="stats-label" text="Upcoming" />
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="104.0" spacing="10.0" styleClass="stats-card">
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="221.0" spacing="10.0" styleClass="stats-card">
                      <children>
                         <Label styleClass="stats-icon" text="🔥" />
                         <Label fx:id="streakStatsLabel" styleClass="stats-number" text="1" />
                         <Label styleClass="stats-label" text="Streak" />
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="123.0" spacing="10.0" styleClass="stats-card">
+                  <VBox alignment="CENTER" prefHeight="89.0" prefWidth="116.0" spacing="10.0" styleClass="stats-card">
                      <children>
                         <Label styleClass="stats-icon" text="📈" />
                         <Label fx:id="totalStatsLabel" styleClass="stats-number" text="0" />
@@ -84,10 +84,10 @@
                   </VBox>
                </children>
             </HBox>
-            <VBox spacing="10.0" styleClass="task-container">
+            <VBox maxWidth="815.0" minHeight="440.0" prefHeight="330.0" prefWidth="815.0" spacing="10.0" styleClass="task-container">
                <children>
                   <Label fx:id="taskSectionTitleLabel" styleClass="task-title" text="✿ Today's Tasks" />
-                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS">
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="357.0" prefWidth="783.0" stylesheets="@dashboard.css" vbarPolicy="ALWAYS">
                      <content>
                         <VBox fx:id="taskListVBox" spacing="10.0" />
                      </content>

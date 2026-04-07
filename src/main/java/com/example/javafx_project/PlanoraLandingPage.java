@@ -132,12 +132,14 @@ public class PlanoraLandingPage extends Application {
         mainContainer.getChildren().addAll(navbar, heroSection);
         root.getChildren().add(mainContainer);
 
-        Scene scene = new Scene(root, 1000, 600);
+        Scene scene = new Scene(root, 1200, 700);
         scene.getStylesheets().add(getClass().getResource("/com/example/javafx_project/styles.css").toExternalForm());
 
         primaryStage.setTitle("PLANORA - Landing Page");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
+        primaryStage.setWidth(1200);
+        primaryStage.setHeight(700);
         primaryStage.show();
 
         addHoverAnimation(signInBtn);
@@ -147,7 +149,7 @@ public class PlanoraLandingPage extends Application {
             try {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/signin-view.fxml"));
-                Scene signInScene = new Scene(loader.load(), 1000, 600);
+                Scene signInScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) signInBtn.getScene().getWindow();
                 stage.setScene(signInScene);
             } catch (Exception ex) {
@@ -160,7 +162,7 @@ public class PlanoraLandingPage extends Application {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/signin-view.fxml")
                 );
-                Scene signInScene = new Scene(loader.load(), 1000, 600);
+                Scene signInScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) getStartedBtn.getScene().getWindow();
                 stage.setScene(signInScene);
             } catch (Exception ex) {
@@ -175,7 +177,7 @@ public class PlanoraLandingPage extends Application {
             try {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/features-view.fxml"));
-                Scene featuresScene = new Scene(loader.load(), 1000, 600);
+                Scene featuresScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) featuresLink.getScene().getWindow();
                 stage.setScene(featuresScene);
             } catch (Exception ex) {
@@ -188,7 +190,7 @@ public class PlanoraLandingPage extends Application {
             try {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                         getClass().getResource("/com/example/javafx_project/features-view.fxml"));
-                Scene featuresScene = new Scene(loader.load(), 1000, 600);
+                Scene featuresScene = new Scene(loader.load(), 1200, 700);
                 Stage stage = (Stage) learnMoreBtn.getScene().getWindow();
                 stage.setScene(featuresScene);
             } catch (Exception ex) {

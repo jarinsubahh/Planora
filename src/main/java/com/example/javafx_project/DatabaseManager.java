@@ -108,6 +108,13 @@ public class DatabaseManager {
     }
 
     /**
+     * Helper method to get the Messages collection.
+     */
+    public static MongoCollection<Document> getMessagesCollection() {
+        return getDatabase().getCollection("messages");
+    }
+
+    /**
      * Save a space to MongoDB
      */
     public static void saveSpace(Space space) {
@@ -202,6 +209,70 @@ public class DatabaseManager {
         } catch (Exception e) {
             System.err.println("Migration error: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Save a message to MongoDB
+     */
+    public static void saveMessage(Message message) {
+        if (!isConnected() || message == null) return;
+        
+        try {
+            MongoCollection<Document> messagesCollection = getMessagesCollection();
+            Document messageDoc = new Document("id", message.getId())
+                    .append("spaceId", message.getSpaceId())
+                    .append("senderId", message.getSenderId())
+                    .append("messageText", message.getMessageText())
+                    .append("timestamp", message.getTimestamp().toString());
+            
+            messagesCollection.insertOne(messageDoc);
+        } catch (Exception e) {
+            System.err.println("Error saving message to MongoDB: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get all messages for a specific space from MongoDB
+     */
+    public static List<Message> getMessagesBySpaceId(String spaceId) {
+        List<Message> messages = new ArrayList<>();
+        if (!isConnected()) return messages;
+        
+        try {
+            MongoCollection<Document> messagesCollection = getMessagesCollection();
+            for (Document doc : messagesCollection.find(new Document("spaceId", spaceId))) {
+                Message message = new Message();
+                message.setId(doc.getString("id"));
+                message.setSpaceId(doc.getString("spaceId"));
+                message.setSenderId(doc.getString("senderId"));
+                message.setMessageText(doc.getString("messageText"));
+                String timestampStr = doc.getString("timestamp");
+                if (timestampStr != null) {
+                    message.setTimestamp(java.time.LocalDateTime.parse(timestampStr));
+                }
+                messages.add(message);
+            }
+            // Sort by timestamp ascending (oldest first)
+            messages.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+        } catch (Exception e) {
+            System.err.println("Error retrieving messages from MongoDB: " + e.getMessage());
+        }
+        return messages;
+    }
+
+    /**
+     * Delete all messages for a specific space from MongoDB
+     */
+    public static void deleteMessagesBySpaceId(String spaceId) {
+        if (!isConnected()) return;
+        
+        try {
+            MongoCollection<Document> messagesCollection = getMessagesCollection();
+            messagesCollection.deleteMany(new Document("spaceId", spaceId));
+            System.out.println("Messages deleted for space: " + spaceId);
+        } catch (Exception e) {
+            System.err.println("Error deleting messages from MongoDB: " + e.getMessage());
         }
     }
 

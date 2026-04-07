@@ -92,7 +92,7 @@ public class SignUpController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/example/javafx_project/signin-view.fxml")
             );
-            stage.setScene(new Scene(loader.load(), 1000, 600));
+            stage.setScene(new Scene(loader.load(), 1200, 700));
         } catch (Exception e) {
             e.printStackTrace();
         }
