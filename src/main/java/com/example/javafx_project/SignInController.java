@@ -44,6 +44,7 @@ public class SignInController {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/javafx_project/dashboard-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load(), 1200, 700);
                 stage.setScene(scene);
+
             } catch (Exception e) {
                 System.err.println("Error loading dashboard: " + e.getMessage());
                 e.printStackTrace();

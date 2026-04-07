@@ -4,7 +4,6 @@
 //
 ////import java.util.prefs.Base64;
 
-
 package com.example.javafx_project;
 
 public class Launcher {
