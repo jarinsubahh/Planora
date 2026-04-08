@@ -60,7 +60,7 @@ public class FocusModeController {
             }
         });
 
-        durationBox.setItems(FXCollections.observableArrayList("15 min", "25 min", "50 min"));
+        durationBox.setItems(FXCollections.observableArrayList("15 min", "25 min", "1 min"));
         durationBox.setValue("25 min");
 
         ToggleGroup group = new ToggleGroup();
@@ -85,7 +85,7 @@ public class FocusModeController {
     private int getDurationSeconds() {
         return switch (durationBox.getValue()) {
             case "15 min" -> 15 * 60;
-            case "50 min" -> 50 * 60;
+            case "1 min" -> 1 * 60;
             default -> 25 * 60;
         };
     }

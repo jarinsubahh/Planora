@@ -30,6 +30,8 @@ public class FocusSessionController {
     private int timeRemaining;
     private String selectedMode;
     private Stage previousStage;
+    private Task currentTask;
+    private boolean isSessionEnded = false;
 
     private MediaPlayer rainPlayer, naturePlayer, nightPlayer;
 
@@ -93,11 +95,13 @@ public class FocusSessionController {
     }
 
     public void setTaskData(Task task, String mode, int durationSeconds, Stage previousStage) {
+        this.currentTask = task;
         this.selectedMode = mode;
         this.previousStage = previousStage;
         this.timeRemaining = durationSeconds;
+        this.isSessionEnded = false;
 
-        taskTitleLabel.setText(task.getTitle());
+        taskTitleLabel.setText(task != null ? task.getTitle() : "Untitled Task");
         updateTimer();
 
         // Apply styling based on mode
@@ -152,13 +156,21 @@ public class FocusSessionController {
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             timeRemaining--;
             updateTimer();
-
-            if (timeRemaining <= 0) {
-                timeline.stop();
-            }
         }));
 
         timeline.setCycleCount(Timeline.INDEFINITE);
+        
+        // Set proper completion handler
+        timeline.setOnFinished(e -> {
+            if (!isSessionEnded) {
+                isSessionEnded = true;
+                onSessionTimerEnded();
+            }
+        });
+
+        // Also add a check as safety net
+        timeline.setCycleCount(timeRemaining + 1);
+        
         timeline.play();
 
         pauseButton.setDisable(false);
@@ -181,6 +193,71 @@ public class FocusSessionController {
         if (timeline != null) timeline.play();
         pauseButton.setDisable(false);
         resumeButton.setDisable(true);
+    }
+
+    /**
+     * Called when the focus session timer reaches zero.
+     * Stops all sounds and shows the session end dialog.
+     */
+    private void onSessionTimerEnded() {
+        Platform.runLater(() -> {
+            // Disable pause/resume buttons
+            pauseButton.setDisable(true);
+            resumeButton.setDisable(true);
+
+            // Stop all sounds
+            stopAllSounds();
+
+            // Show session end dialog
+            showSessionEndDialog();
+        });
+    }
+
+    /**
+     * Shows the session end dialog asking if work was finished.
+     * Handles task completion and navigation back to focus mode.
+     */
+    private void showSessionEndDialog() {
+        Stage currentStage = (Stage) timerLabel.getScene().getWindow();
+
+        Stage dialogStage = FocusSessionEndDialog.show(
+            currentStage,
+            // On YES: Mark task completed and navigate back
+            () -> {
+                if (currentTask != null) {
+                    // Mark task as completed in database
+                    TaskService.markCompleted(currentTask.getTitle(), UserManager.currentUser);
+                }
+                returnToFocusMode(currentStage);
+            },
+            // On NO: Just navigate back without changes
+            () -> {
+                returnToFocusMode(currentStage);
+            }
+        );
+
+        dialogStage.show();
+    }
+
+    /**
+     * Returns to the focus mode main screen, resetting state.
+     */
+    private void returnToFocusMode(Stage currentStage) {
+        // Stop any remaining sounds
+        stopAllSounds();
+
+        // Stop timeline if still running
+        if (timeline != null && timeline.getStatus().equals(Animation.Status.RUNNING)) {
+            timeline.stop();
+        }
+
+        // Close current session stage
+        currentStage.close();
+
+        // Show previous stage (Focus Mode main page)
+        if (previousStage != null) {
+            previousStage.show();
+        }
     }
 
     // 🌧 Rain animation
@@ -317,17 +394,12 @@ public class FocusSessionController {
     }
 
     private void exitFocusSession() {
-        // Stop timer and sounds
-        if (timeline != null) timeline.stop();
-        stopAllSounds();
-
-        // Close current stage
-        Stage currentStage = (Stage) exitButton.getScene().getWindow();
-        currentStage.close();
-
-        // Show previous stage if available
-        if (previousStage != null) {
-            previousStage.show();
+        if (!isSessionEnded) {
+            // Prevent showing dialog twice
+            isSessionEnded = true;
         }
+
+        Stage currentStage = (Stage) exitButton.getScene().getWindow();
+        returnToFocusMode(currentStage);
     }
 }
