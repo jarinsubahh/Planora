@@ -233,7 +233,7 @@ public class PlanoraLandingPage extends Application {
         label.setOnMouseEntered(e -> scaleUp.playFromStart());
         label.setOnMouseExited(e -> scaleDown.playFromStart());
     }
-    // Add spacious pulsing glassy circles
+
     private void addGlassyCircles(StackPane root) {
         for (int i = 0; i < 3; i++) {
             Circle circle = new Circle(160 + Math.random() * 100,Color.web("rgba(220, 200, 255, 0.18)") // soft lavender transparency
@@ -247,7 +247,7 @@ public class PlanoraLandingPage extends Application {
             circle.setEffect(new DropShadow(35, Color.web("#E6D6FF")));
 
             // Pulse animation (grow/shrink)
-            ScaleTransition pulse = new ScaleTransition(Duration.seconds(12 + i * 3), circle);
+            ScaleTransition pulse = new ScaleTransition(Duration.seconds(25 + i * 3), circle);
             pulse.setFromX(1.0);
             pulse.setFromY(1.0);
             pulse.setToX(1.3);

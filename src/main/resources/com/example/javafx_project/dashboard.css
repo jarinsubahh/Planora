@@ -91,6 +91,10 @@
     -fx-text-fill: #7A73FF;
 }
 
+#progressCircle {
+    -fx-stroke-linecap: round;
+}
+
 /* Add Task Button */
 .add-task-button {
     -fx-background-color: linear-gradient(to right, #7B73FF, #FF6FB5);

@@ -41,8 +41,8 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <StackPane prefHeight="61.0" prefWidth="135.0">
                      <children>
-                        <Circle fill="transparent" radius="27.5" stroke="#7A73FF" strokeWidth="6.0" />
-                        <Label styleClass="progress-text" text="0%" />
+                        <Circle fx:id="progressCircle" fill="transparent" radius="27.5" stroke="#7A73FF" strokeWidth="6.0" />
+                        <Label fx:id="progressPercentageLabel" styleClass="progress-text" text="0%" />
                      </children>
                   </StackPane>
                   <HBox alignment="CENTER_RIGHT" spacing="15.0">

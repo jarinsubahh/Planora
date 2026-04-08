@@ -60,6 +60,12 @@ public class DashboardController {
     private Label taskSectionTitleLabel;
 
     @FXML
+    private Circle progressCircle;
+
+    @FXML
+    private Label progressPercentageLabel;
+
+    @FXML
     private Button dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn, settingsBtn;
 
     @FXML
@@ -792,6 +798,8 @@ private void buildCalendarView() {
         upcomingStatsLabel.setText(String.valueOf(upcomingCount));
         totalStatsLabel.setText(String.valueOf(totalCount));
         streakStatsLabel.setText(String.valueOf(streakCount));
+        
+        updateProgressCircle(allTasks);
     }
 
     private long calculateStreak(List<Task> allTasks) {
@@ -820,6 +828,27 @@ private void buildCalendarView() {
 
         return streak;
     }
+
+    private void updateProgressCircle(List<Task> allTasks) {
+        if (progressCircle == null || progressPercentageLabel == null) {
+            return;
+        }
+        
+        long totalTasks = allTasks.size();
+        long completedTasks = allTasks.stream()
+            .filter(Task::isCompleted)
+            .count();
+        
+        int percentage = (int) ((totalTasks == 0) ? 0 : (completedTasks * 100) / totalTasks);
+        
+        progressPercentageLabel.setText(percentage + "%");
+        
+        double circumference = 2 * Math.PI * 27.5;
+        double strokeDashOffset = circumference * (100 - percentage) / 100;
+        progressCircle.setStyle("-fx-stroke-dasharray: " + circumference + "; " +
+                                "-fx-stroke-dashoffset: " + strokeDashOffset + ";");
+    }
+    
     private VBox createSpaceCard(Space space) {
         VBox card = new VBox(10);
         card.getStyleClass().add("space-card");
