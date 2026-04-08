@@ -105,18 +105,21 @@ public class ChatController {
 
     private void loadMessages() {
         if (currentSpace == null) return;
-
-        chatMessagesContainer.getChildren().clear();
-
-        // Load messages from database
-        List<Message> messages = DatabaseManager.getMessagesBySpaceId(currentSpace.getSpaceName());
-
-        for (Message message : messages) {
-            addMessageToUI(message, false);
-        }
-
-        // Auto-scroll to bottom
-        Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
+        String spaceName = currentSpace.getSpaceName();
+        new Thread(() -> {
+            List<Message> messages = DatabaseManager.getMessagesBySpaceId(spaceName);
+            Platform.runLater(() -> {
+                // Guard against race if user switched space while loading.
+                if (currentSpace == null || !spaceName.equals(currentSpace.getSpaceName())) {
+                    return;
+                }
+                chatMessagesContainer.getChildren().clear();
+                for (Message message : messages) {
+                    addMessageToUI(message, false);
+                }
+                chatScrollPane.setVvalue(1.0);
+            });
+        }).start();
     }
 
     @FXML
@@ -146,7 +149,7 @@ public class ChatController {
     }
 
     private void addMessageToUI(Message message, boolean isSent) {
-        Platform.runLater(() -> {
+        if (Platform.isFxApplicationThread()) {
             HBox messageBox = new HBox();
             messageBox.setSpacing(10);
             messageBox.setPadding(new Insets(5, 12, 5, 12));
@@ -175,7 +178,9 @@ public class ChatController {
 
             messageBox.getChildren().add(bubbleContainer);
             chatMessagesContainer.getChildren().add(messageBox);
-        });
+            return;
+        }
+        Platform.runLater(() -> addMessageToUI(message, isSent));
     }
 
     public void refreshMessages() {

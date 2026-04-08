@@ -22,6 +22,9 @@ public class TaskService {
     }
 
     public static void createTask(Task task, String currentUser) {
+        if (task == null || task.getUserId() == null || !DatabaseManager.isConnected()) {
+            return;
+        }
         Document doc = new Document("user_id", task.getUserId())
                 .append("title", task.getTitle())
                 .append("description", task.getDescription())
@@ -36,6 +39,9 @@ public class TaskService {
 
     public static List<Task> getTasksByUser(String userId) {
         List<Task> tasks = new ArrayList<>();
+        if (userId == null || !DatabaseManager.isConnected()) {
+            return tasks;
+        }
         Bson filter = Filters.eq("user_id", userId);
 
         for (Document doc : getCollection().find(filter).sort(Sorts.descending("_id"))) {
@@ -45,6 +51,9 @@ public class TaskService {
     }
 
     public static List<Task> getTodayTasks(String userId) {
+        if (userId == null || !DatabaseManager.isConnected()) {
+            return new ArrayList<>();
+        }
         String today = LocalDate.now().format(DATE_FORMAT);
         Bson filter = Filters.and(
                 Filters.eq("user_id", userId),
@@ -55,6 +64,9 @@ public class TaskService {
     }
 
     public static List<Task> getUpcomingTasks(String userId) {
+        if (userId == null || !DatabaseManager.isConnected()) {
+            return new ArrayList<>();
+        }
         String today = LocalDate.now().format(DATE_FORMAT);
         Bson filter = Filters.and(
                 Filters.eq("user_id", userId),
@@ -65,6 +77,9 @@ public class TaskService {
     }
 
     public static List<Task> getCompletedTasks(String userId) {
+        if (userId == null || !DatabaseManager.isConnected()) {
+            return new ArrayList<>();
+        }
         Bson filter = Filters.and(
                 Filters.eq("user_id", userId),
                 Filters.eq("completed", true)
@@ -72,17 +87,26 @@ public class TaskService {
         return getTasksFromFilter(filter);
     }
     public static Task getTaskByTitle(String userId, String title) {
+        if (userId == null || title == null || !DatabaseManager.isConnected()) {
+            return null;
+        }
         Bson filter = Filters.and(Filters.eq("user_id", userId), Filters.eq("title", title));
         Document doc = DatabaseManager.getTasksCollection().find(filter).first();
         return (doc != null) ? mapDocumentToTask(doc) : null;
     }
 
     public static void markCompleted(String title, String userId) {
+        if (title == null || userId == null || !DatabaseManager.isConnected()) {
+            return;
+        }
         Bson filter = Filters.and(Filters.eq("title", title), Filters.eq("user_id", userId));
         getCollection().updateOne(filter, Updates.set("completed", true));
     }
 
     public static void deleteTask(String title, String userId) {
+        if (title == null || userId == null || !DatabaseManager.isConnected()) {
+            return;
+        }
         Bson filter = Filters.and(Filters.eq("title", title), Filters.eq("user_id", userId));
         getCollection().deleteOne(filter);
     }
@@ -101,6 +125,9 @@ public class TaskService {
     }
 
     public static void updateTask(Task task) {
+        if (task == null || task.getTitle() == null || task.getUserId() == null || !DatabaseManager.isConnected()) {
+            return;
+        }
         Bson filter = Filters.and(
                 Filters.eq("title", task.getTitle()),
                 Filters.eq("user_id", task.getUserId())

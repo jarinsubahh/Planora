@@ -309,12 +309,23 @@ public class DatabaseManager {
                 message.setMessageText(doc.getString("messageText"));
                 String timestampStr = doc.getString("timestamp");
                 if (timestampStr != null) {
-                    message.setTimestamp(java.time.LocalDateTime.parse(timestampStr));
+                    try {
+                        message.setTimestamp(java.time.LocalDateTime.parse(timestampStr));
+                    } catch (Exception e) {
+                        message.setTimestamp(java.time.LocalDateTime.now());
+                    }
+                } else {
+                    message.setTimestamp(java.time.LocalDateTime.now());
                 }
                 messages.add(message);
             }
             // Sort by timestamp ascending (oldest first)
-            messages.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+            messages.sort((a, b) -> {
+                if (a.getTimestamp() == null && b.getTimestamp() == null) return 0;
+                if (a.getTimestamp() == null) return 1;
+                if (b.getTimestamp() == null) return -1;
+                return a.getTimestamp().compareTo(b.getTimestamp());
+            });
         } catch (Exception e) {
             System.err.println("Error retrieving messages from MongoDB: " + e.getMessage());
         }

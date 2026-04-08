@@ -340,6 +340,22 @@
     -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.5), 12, 0, 0, 3);
 }
 
+.calendar-back-button {
+    -fx-background-color: linear-gradient(to right, #7b73ff, #ff6fb5);
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 16;
+    -fx-background-radius: 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.35), 10, 0, 0, 2);
+}
+
+.calendar-back-button:hover {
+    -fx-background-color: linear-gradient(to right, #6a63ff, #ff5fa5);
+    -fx-effect: dropshadow(gaussian, rgba(123, 115, 255, 0.55), 14, 0, 0, 3);
+}
+
 
 /* Filter Panel Styles */
 .filter-panel {

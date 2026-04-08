@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.List;
+import java.util.Objects;
 
 public class DashboardController {
 
@@ -364,6 +365,7 @@ private void buildCalendarView() {
 
     private void buildCalendarGrid() {
         calendarGrid.getChildren().clear();
+        rebuildTaskDateCache();
 
         // Weekday headers
         String[] days = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
@@ -428,8 +430,15 @@ private void buildCalendarView() {
         // Clear calendar and show task view
         calendarPageRoot.getChildren().clear();
 
+        Button backBtn = new Button("← Back to Calendar");
+        backBtn.getStyleClass().add("calendar-back-button");
+        backBtn.setOnAction(e -> buildCalendarView());
+
         Label title = new Label("Tasks for " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMMM d")));
         title.getStyleClass().add("task-title");
+
+        HBox headerRow = new HBox(12, backBtn, title);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
 
         VBox tasksArea = new VBox(10);
         tasksArea.setPadding(new Insets(10));
@@ -451,13 +460,20 @@ private void buildCalendarView() {
         }
 
         // Add a spacer and the tasks
-        calendarPageRoot.getChildren().addAll(title, tasksArea);
+        calendarPageRoot.getChildren().addAll(headerRow, tasksArea);
     }
 
     private boolean hasTaskOnDate(java.time.LocalDate date) {
-        // Only consider tasks that are not completed
-        return TaskService.getTasksByUser(UserManager.currentUser).stream()
-                .anyMatch(t -> t.getDeadline() != null && t.getDeadline().equals(date) && !t.isCompleted());
+        return taskDateCache != null && Boolean.TRUE.equals(taskDateCache.get(date));
+    }
+
+    private void rebuildTaskDateCache() {
+        taskDateCache = new java.util.HashMap<>();
+        for (Task task : TaskService.getTasksByUser(UserManager.currentUser)) {
+            if (task.getDeadline() != null && !task.isCompleted()) {
+                taskDateCache.put(task.getDeadline(), true);
+            }
+        }
     }
 
 
@@ -572,14 +588,15 @@ private void buildCalendarView() {
 
     private void loadTasks() {
         selectedCategory = "All";
-        currentTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        List<Task> allTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        currentTasks = allTasks;
         List<Task> nonCompletedTasks = currentTasks.stream()
             .filter(t -> !t.isCompleted())
             .toList();
         currentTasks = nonCompletedTasks;
         updateFilterButtonsStyle();
         displayTasks(nonCompletedTasks);
-        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
+        updateStatisticsFromCache(allTasks);
     }
 
     private void loadTodayTasks() {
@@ -587,7 +604,8 @@ private void buildCalendarView() {
         currentTasks = TaskService.getTodayTasks(UserManager.currentUser);
         updateFilterButtonsStyle();
         displayTasks(currentTasks);
-        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
+        List<Task> allTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        updateStatisticsFromCache(allTasks);
     }
 
     private void loadUpcomingTasks() {
@@ -595,7 +613,8 @@ private void buildCalendarView() {
         currentTasks = TaskService.getUpcomingTasks(UserManager.currentUser);
         updateFilterButtonsStyle();
         displayTasks(currentTasks);
-        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
+        List<Task> allTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        updateStatisticsFromCache(allTasks);
     }
 
     private void loadCompletedTasks() {
@@ -603,7 +622,8 @@ private void buildCalendarView() {
         currentTasks = TaskService.getCompletedTasks(UserManager.currentUser);
         updateFilterButtonsStyle();
         displayTasks(currentTasks);
-        updateStatisticsFromCache(TaskService.getTasksByUser(UserManager.currentUser));
+        List<Task> allTasks = TaskService.getTasksByUser(UserManager.currentUser);
+        updateStatisticsFromCache(allTasks);
     }
 
     private void displayTasks(List<Task> tasks) {
@@ -805,7 +825,13 @@ private void buildCalendarView() {
     private long calculateStreak(List<Task> allTasks) {
         List<LocalDate> completionDates = allTasks.stream()
             .filter(Task::isCompleted)
-            .map(t -> t.getDeadline() != null ? t.getDeadline() : t.getCreatedAt().toLocalDate())
+            .map(t -> {
+                if (t.getDeadline() != null) {
+                    return t.getDeadline();
+                }
+                return t.getCreatedAt() != null ? t.getCreatedAt().toLocalDate() : null;
+            })
+            .filter(Objects::nonNull)
             .distinct()
             .sorted()
             .toList();
