@@ -117,7 +117,7 @@ public class AddTaskController {
     @FXML
     private void saveTask() {
         if (titleField.getText().trim().isEmpty()) {
-            showAlert("Error", "Title is required!");
+            showToast("Title is required!");
             return;
         }
 
@@ -145,7 +145,7 @@ public class AddTaskController {
                 if (DatabaseManager.isConnected()) {
                     new Thread(() -> DatabaseManager.saveSpace(currentSpace)).start();
                 } else {
-                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                    showToast("Not connected to cloud. Changes may not be saved.");
                 }
             } else {
                 TaskService.updateTask(task);
@@ -157,7 +157,7 @@ public class AddTaskController {
                 if (DatabaseManager.isConnected()) {
                     new Thread(() -> DatabaseManager.saveSpace(currentSpace)).start();
                 } else {
-                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                    showToast("Not connected to cloud. Changes may not be saved.");
                 }
             } else {
                 TaskService.createTask(task, UserManager.currentUser);
@@ -181,11 +181,9 @@ public class AddTaskController {
         closeWindow();
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void showToast(String message) {
+        if (saveButton != null && saveButton.getScene() != null) {
+            Toast.show((Stage) saveButton.getScene().getWindow(), message);
+        }
     }
 }

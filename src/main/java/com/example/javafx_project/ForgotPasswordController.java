@@ -95,10 +95,9 @@ public class ForgotPasswordController {
             Stage stage = (Stage) emailField.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/com/example/javafx_project/signin-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load(), 1200, 700);
             stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.setResizable(false);
+            configureStage(stage);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,13 +151,21 @@ public class ForgotPasswordController {
             controller.setUserEmail(resetEmail);
             
             Stage stage = (Stage) emailField.getScene().getWindow();
-            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            javafx.scene.Scene scene = new javafx.scene.Scene(root, 1200, 700);
             stage.setScene(scene);
-            stage.setMaximized(true);
+            configureStage(stage);
         } catch (Exception e) {
             e.printStackTrace();
             showMessage("Error redirecting to reset password", "error");
         }
+    }
+
+    private void configureStage(Stage stage) {
+        stage.setMaximized(false);
+        stage.setResizable(false);
+        stage.setWidth(1200);
+        stage.setHeight(700);
+        stage.centerOnScreen();
     }
 
     /**

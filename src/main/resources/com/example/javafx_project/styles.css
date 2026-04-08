@@ -216,3 +216,11 @@
     -fx-font-size: 12px;
     -fx-font-weight: 600;
 }
+
+.toast-node {
+    -fx-background-color: rgba(122, 115, 255, 0.8);
+    -fx-background-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.6), 20, 0.5, 0, 0);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1;
+}

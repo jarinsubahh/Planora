@@ -5,9 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
@@ -22,7 +20,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
-import java.util.Optional;
 
 public class SettingsController {
 
@@ -167,6 +164,9 @@ public class SettingsController {
             newPasswordField.clear();
             confirmPasswordField.clear();
             showPasswordSuccess("Password updated.");
+            if (rootPane != null && rootPane.getScene() != null) {
+                Toast.show((Stage) rootPane.getScene().getWindow(), "🔒 Password updated successfully!");
+            }
         } else {
             showPasswordError("Current password is incorrect or could not be updated.");
         }
@@ -204,17 +204,14 @@ public class SettingsController {
 
     @FXML
     private void handleDeleteAccountClick() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete account");
-        alert.setHeaderText(null);
-        alert.setContentText(
-                "Are you sure you want to permanently delete your account?\nThis action cannot be undone.");
-        ButtonType cancel = new ButtonType("Cancel");
-        ButtonType confirm = new ButtonType("Confirm Delete");
-        alert.getButtonTypes().setAll(cancel, confirm);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isEmpty() || result.get() != confirm) {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        boolean confirmDelete = DialogUtils.confirm(
+                stage,
+                "Delete account",
+                "Are you sure you want to permanently delete your account?\nThis action cannot be undone.",
+                "Confirm Delete",
+                "Cancel");
+        if (!confirmDelete) {
             return;
         }
 
@@ -228,11 +225,7 @@ public class SettingsController {
         if (deleted) {
             goToLogin();
         } else {
-            Alert err = new Alert(Alert.AlertType.ERROR);
-            err.setTitle("Error");
-            err.setHeaderText(null);
-            err.setContentText("Could not delete your account. Please try again.");
-            err.showAndWait();
+            Toast.show(stage, "Could not delete your account. Please try again.");
         }
     }
 

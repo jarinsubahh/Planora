@@ -19,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.time.YearMonth;
 
@@ -833,14 +834,96 @@ private void buildCalendarView() {
         return card;
     }
     private void handleCreateSpace() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setHeaderText("Create a shared space");
-        dialog.showAndWait().ifPresent(name -> {
-            if (!name.trim().isEmpty()) {
-                SpaceManager.addSpace(new Space(name, UserManager.currentUser));
-                showSpaceList();
+        String name = showCreateSpaceDialog();
+        if (name == null) {
+            return;
+        }
+
+        String trimmedName = name.trim();
+        if (!trimmedName.isEmpty()) {
+            SpaceManager.addSpace(new Space(trimmedName, UserManager.currentUser));
+            Stage stage = resolveStage();
+            if (stage != null) {
+                Toast.show(stage, "🌌 Space '" + trimmedName + "' Created!");
             }
+            showSpaceList();
+        }
+    }
+
+    private String showCreateSpaceDialog() {
+        Stage owner = resolveStage();
+        if (owner == null) {
+            return null;
+        }
+
+        final String[] result = {null};
+
+        Stage dialog = new Stage(StageStyle.TRANSPARENT);
+        dialog.initOwner(owner);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+
+        Label title = new Label("Create a shared space");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #6a4c93;");
+
+        Label subtitle = new Label("Enter a name for your new space");
+        subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #7a6599;");
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Space name");
+        nameField.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.95);" +
+                "-fx-border-color: rgba(143,72,255,0.3);" +
+                "-fx-border-radius: 12;" +
+                "-fx-background-radius: 12;" +
+                "-fx-padding: 10 12;" +
+                "-fx-font-size: 13px;"
+        );
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setStyle(
+                "-fx-background-color: #ece6f6;" +
+                "-fx-text-fill: #4f3a74;" +
+                "-fx-background-radius: 14;" +
+                "-fx-padding: 8 16;" +
+                "-fx-font-weight: bold;"
+        );
+        cancelBtn.setOnAction(e -> dialog.close());
+
+        Button createBtn = new Button("Create");
+        createBtn.setStyle(
+                "-fx-background-color: linear-gradient(to right, #b56cff, #8f48ff);" +
+                "-fx-text-fill: white;" +
+                "-fx-background-radius: 14;" +
+                "-fx-padding: 8 16;" +
+                "-fx-font-weight: bold;"
+        );
+        createBtn.setOnAction(e -> {
+            result[0] = nameField.getText();
+            dialog.close();
         });
+
+        nameField.setOnAction(e -> createBtn.fire());
+
+        HBox actions = new HBox(10, cancelBtn, createBtn);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox root = new VBox(12, title, subtitle, nameField, actions);
+        root.setPadding(new Insets(18));
+        root.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.98);" +
+                "-fx-background-radius: 18;" +
+                "-fx-border-color: rgba(143,72,255,0.25);" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 18;" +
+                "-fx-effect: dropshadow(gaussian, rgba(70,25,120,0.25), 24, 0.2, 0, 8);"
+        );
+
+        Scene scene = new Scene(root, 390, 190);
+        scene.setFill(Color.TRANSPARENT);
+        dialog.setScene(scene);
+        dialog.showAndWait();
+
+        return result[0];
     }
     private void showSpaceList() {
         currentActiveSpace = null; // Clear active space context
@@ -897,7 +980,10 @@ private void buildCalendarView() {
                 existing.setDeadline(task.getDeadline());
                 existing.setCategory(task.getCategory());
                 TaskService.updateTask(existing);
-                new Alert(Alert.AlertType.INFORMATION, "Synced task updated in personal dashboard!").show();
+                Stage stage = resolveStage();
+                if (stage != null) {
+                    Toast.show(stage, "Synced task updated in personal dashboard!");
+                }
             } else {
                 // Create new synced task
                 Task syncedTask = new Task();
@@ -909,7 +995,10 @@ private void buildCalendarView() {
                 syncedTask.setCategory(task.getCategory());
                 syncedTask.setCompleted(false);
                 TaskService.createTask(syncedTask, UserManager.currentUser);
-                new Alert(Alert.AlertType.INFORMATION, "Task synced to personal dashboard!").show();
+                Stage stage = resolveStage();
+                if (stage != null) {
+                    Toast.show(stage, "Task synced to personal dashboard!");
+                }
             }
             updateStatistics();
         });
@@ -929,7 +1018,10 @@ private void buildCalendarView() {
                 if (DatabaseManager.isConnected()) {
                     new Thread(() -> DatabaseManager.saveSpace(space)).start();
                 } else {
-                    new Alert(Alert.AlertType.WARNING, "Not connected to cloud. Changes may not be saved.").show();
+                    Stage stage = resolveStage();
+                    if (stage != null) {
+                        Toast.show(stage, "Not connected to cloud. Changes may not be saved.");
+                    }
                 }
                 showSpaceDetails(space); // Refresh UI
             });
@@ -1020,32 +1112,118 @@ private void buildCalendarView() {
 
 
     private void handleInvite(Space space) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setHeaderText("Invite to " + space.getSpaceName());
-        dialog.setContentText("Username:");
-        dialog.showAndWait().ifPresent(username -> {
-            if (username.trim().isEmpty()) {
-                new Alert(Alert.AlertType.WARNING, "Username cannot be empty!").show();
-                return;
-            }
+        String username = showInviteDialog(space.getSpaceName());
+        if (username == null) {
+            return;
+        }
 
-            // Create invitation in MongoDB
-            InvitationManager.createInvitation(space.getSpaceName(), username.trim(), UserManager.currentUser);
-            new Alert(Alert.AlertType.INFORMATION, "Invitation sent to " + username + "!").show();
+        String recipient = username.trim();
+        if (recipient.isEmpty()) {
+            Stage stage = resolveStage();
+            if (stage != null) {
+                Toast.show(stage, "Username cannot be empty!");
+            }
+            return;
+        }
+
+        InvitationManager.createInvitation(space.getSpaceName(), recipient, UserManager.currentUser);
+        Stage stage = resolveStage();
+        if (stage != null) {
+            Toast.show(stage, "📩 Invitation sent to " + recipient);
+        }
+    }
+
+    private String showInviteDialog(String spaceName) {
+        Stage owner = resolveStage();
+        if (owner == null) {
+            return null;
+        }
+
+        final String[] result = {null};
+
+        Stage dialog = new Stage(StageStyle.TRANSPARENT);
+        dialog.initOwner(owner);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+
+        Label title = new Label("Invite to " + spaceName);
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #6a4c93;");
+
+        Label subtitle = new Label("Enter username to invite");
+        subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #7a6599;");
+
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+        usernameField.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.95);" +
+                "-fx-border-color: rgba(143,72,255,0.3);" +
+                "-fx-border-radius: 12;" +
+                "-fx-background-radius: 12;" +
+                "-fx-padding: 10 12;" +
+                "-fx-font-size: 13px;"
+        );
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setStyle(
+                "-fx-background-color: #ece6f6;" +
+                "-fx-text-fill: #4f3a74;" +
+                "-fx-background-radius: 14;" +
+                "-fx-padding: 8 16;" +
+                "-fx-font-weight: bold;"
+        );
+        cancelBtn.setOnAction(e -> dialog.close());
+
+        Button inviteBtn = new Button("Invite");
+        inviteBtn.setStyle(
+                "-fx-background-color: linear-gradient(to right, #b56cff, #8f48ff);" +
+                "-fx-text-fill: white;" +
+                "-fx-background-radius: 14;" +
+                "-fx-padding: 8 16;" +
+                "-fx-font-weight: bold;"
+        );
+        inviteBtn.setOnAction(e -> {
+            result[0] = usernameField.getText();
+            dialog.close();
         });
+
+        usernameField.setOnAction(e -> inviteBtn.fire());
+
+        HBox actions = new HBox(10, cancelBtn, inviteBtn);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox root = new VBox(12, title, subtitle, usernameField, actions);
+        root.setPadding(new Insets(18));
+        root.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.98);" +
+                "-fx-background-radius: 18;" +
+                "-fx-border-color: rgba(143,72,255,0.25);" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 18;" +
+                "-fx-effect: dropshadow(gaussian, rgba(70,25,120,0.25), 24, 0.2, 0, 8);"
+        );
+
+        Scene scene = new Scene(root, 390, 190);
+        scene.setFill(Color.TRANSPARENT);
+        dialog.setScene(scene);
+        dialog.showAndWait();
+
+        return result[0];
     }
 
     private void handleDeleteSpace(Space space) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Delete Space");
-        confirmAlert.setHeaderText("Delete \"" + space.getSpaceName() + "\"?");
-        confirmAlert.setContentText("This action cannot be undone. All space members will lose access.");
-        
-        if (confirmAlert.showAndWait().get() == ButtonType.OK) {
+        Stage stage = resolveStage();
+        boolean confirmed = DialogUtils.confirm(
+                stage,
+                "Delete Space",
+                "Delete \"" + space.getSpaceName() + "\"?\nThis action cannot be undone. All space members will lose access.",
+                "Delete",
+                "Cancel");
+        if (confirmed) {
             SpaceManager.deleteSpace(space.getSpaceName());
             // Also delete all messages for this space
             DatabaseManager.deleteMessagesBySpaceId(space.getSpaceName());
-            new Alert(Alert.AlertType.INFORMATION, "Space deleted successfully!").show();
+            if (stage != null) {
+                Toast.show(stage, "Space deleted successfully!");
+            }
             showSpaceList();
         }
     }
@@ -1127,7 +1305,10 @@ private void buildCalendarView() {
         acceptBtn.setOnAction(e -> {
             InvitationManager.acceptInvitation(invitation.spaceName, UserManager.currentUser);
             SpaceManager.loadSpacesFromMongoDB();
-            new Alert(Alert.AlertType.INFORMATION, "🎉 You joined " + invitation.spaceName + "!").show();
+            Stage stage = resolveStage();
+            if (stage != null) {
+                Toast.show(stage, "✅ Joined " + invitation.spaceName);
+            }
             showInvitations();
         });
 
@@ -1144,7 +1325,10 @@ private void buildCalendarView() {
         );
         declineBtn.setOnAction(e -> {
             InvitationManager.declineInvitation(invitation.spaceName, UserManager.currentUser);
-            new Alert(Alert.AlertType.INFORMATION, "Invitation declined.").show();
+            Stage stage = resolveStage();
+            if (stage != null) {
+                Toast.show(stage, "Invitation declined.");
+            }
             showInvitations();
         });
 
@@ -1178,6 +1362,16 @@ private void buildCalendarView() {
             e.printStackTrace();
         }
     }
+    private Stage resolveStage() {
+        if (mainContent != null && mainContent.getScene() != null) {
+            return (Stage) mainContent.getScene().getWindow();
+        }
+        if (taskListVBox != null && taskListVBox.getScene() != null) {
+            return (Stage) taskListVBox.getScene().getWindow();
+        }
+        return null;
+    }
+
     private void setActiveButton(Button activeButton) {
         // List of all your sidebar buttons
         Button[] allButtons = {dashboardBtn, todayBtn, upcomingBtn, completedBtn, focusBtn,calendarBtn, analyticsBtn,spaceBtn, settingsBtn};

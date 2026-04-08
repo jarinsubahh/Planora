@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -95,12 +94,12 @@ public class FocusModeController {
     private void startFocus() {
         Task selectedTask = taskSelector.getValue();
         if (selectedTask == null) {
-            new Alert(Alert.AlertType.WARNING, "Please select a task to focus on.").showAndWait();
+            Toast.show((Stage) startButton.getScene().getWindow(), "Please select a task to focus on.");
             return;
         }
 
         if (selectedMode == null) {
-            new Alert(Alert.AlertType.WARNING, "Please choose a focus mode.").showAndWait();
+            Toast.show((Stage) startButton.getScene().getWindow(), "Please choose a focus mode.");
             return;
         }
 

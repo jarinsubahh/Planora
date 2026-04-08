@@ -3,10 +3,10 @@ package com.example.javafx_project;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.util.Optional;
 
 public class SignUpController {
     @FXML private TextField usernameField;
@@ -56,6 +56,9 @@ public class SignUpController {
         switch (result) {
             case SUCCESS -> {
                 errorLabel.setVisible(false);
+                if (usernameField != null && usernameField.getScene() != null) {
+                    Toast.show((Stage) usernameField.getScene().getWindow(), "✨ Account Created Successfully!");
+                }
                 showSignUpSuccessPopup();
             }
             case USERNAME_TAKEN -> {
@@ -70,17 +73,14 @@ public class SignUpController {
     }
 
     private void showSignUpSuccessPopup() {
-        ButtonType goToSignInButton = new ButtonType("Go to Sign In", ButtonBar.ButtonData.OK_DONE);
-        ButtonType stayHereButton = new ButtonType("Stay Here", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Account Created");
-        alert.setHeaderText("Congratulations! You're all set up!");
-        alert.setContentText("Your account was created successfully.");
-        alert.getButtonTypes().setAll(goToSignInButton, stayHereButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == goToSignInButton) {
+        Stage stage = (Stage) usernameField.getScene().getWindow();
+        boolean goToSignInNow = DialogUtils.confirm(
+                stage,
+                "Account Created",
+                "Congratulations! You're all set up!\nYour account was created successfully.",
+                "Go to Sign In",
+                "Stay Here");
+        if (goToSignInNow) {
             goToSignIn();
         }
     }
