@@ -18,32 +18,20 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-/**
- * Polished post-session dialog with lavender aesthetic.
- * Displays when focus timer completes, asking if work was finished.
- */
+
 public class FocusSessionEndDialog {
 
-    /**
-     * Shows the session end dialog with lavender aesthetic.
-     * 
-     * @param owner Parent stage
-     * @param onYes Callback when Yes is clicked
-     * @param onNo Callback when No is clicked
-     * @return The dialog Stage
-     */
+
     public static Stage show(Stage owner, Runnable onYes, Runnable onNo) {
-        // Root container with glassmorphism effect
+
         StackPane dialogRoot = new StackPane();
-        
-        // Background blur/overlay effect
+
         Rectangle overlay = new Rectangle();
         overlay.setFill(Color.color(0, 0, 0, 0.3));
         overlay.widthProperty().bind(dialogRoot.widthProperty());
         overlay.heightProperty().bind(dialogRoot.heightProperty());
         dialogRoot.getChildren().add(overlay);
 
-        // Main dialog content VBox
         VBox contentBox = new VBox(16);
         contentBox.setPadding(new Insets(40));
         contentBox.setAlignment(Pos.CENTER);
@@ -82,13 +70,11 @@ public class FocusSessionEndDialog {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(8, 0, 0, 0));
 
-        // Yes Button - Primary (solid lavender)
         Button yesButton = new Button("Yes");
         styleYesButton(yesButton);
         yesButton.setMinWidth(120);
         yesButton.setPrefHeight(48);
 
-        // No Button - Secondary (outline style)
         Button noButton = new Button("No");
         styleNoButton(noButton);
         noButton.setMinWidth(120);
@@ -100,7 +86,7 @@ public class FocusSessionEndDialog {
         dialogRoot.getChildren().add(contentBox);
         StackPane.setAlignment(contentBox, Pos.CENTER);
 
-        // Create scene and stage
+
         Scene dialogScene = new Scene(dialogRoot, 600, 400);
         dialogScene.setFill(Color.TRANSPARENT);
 
@@ -110,22 +96,18 @@ public class FocusSessionEndDialog {
         dialogStage.setScene(dialogScene);
         dialogStage.setTitle("Focus Session Complete");
 
-        // Button actions with fade-out animation
-        yesButton.setOnAction(e -> {
-            animateDialogClose(dialogStage, () -> {
+        yesButton.setOnAction(e -> {animateDialogClose(dialogStage, () -> {
                 if (onYes != null) onYes.run();
             });
         });
 
-        noButton.setOnAction(e -> {
-            animateDialogClose(dialogStage, () -> {
+        noButton.setOnAction(e -> {animateDialogClose(dialogStage, () -> {
                 if (onNo != null) onNo.run();
             });
         });
 
-        // Show with fade-in and scale animation
         dialogStage.setOnShown(e -> {
-            // Center the dialog
+
             dialogStage.setX(owner.getX() + (owner.getWidth() - 600) / 2);
             dialogStage.setY(owner.getY() + (owner.getHeight() - 400) / 2);
 

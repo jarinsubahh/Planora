@@ -63,7 +63,7 @@ public class UserManager {
         currentUser = null;
     }
 
-    /** Profile fields stored in MongoDB users collection. */
+
     public static Document getUserDocument(String username) {
         if (username == null || !DatabaseManager.isConnected()) {
             return null;
@@ -102,10 +102,7 @@ public class UserManager {
         }
     }
 
-    /**
-     * Deletes the user and related cloud data (tasks, invitations, space membership / owned spaces),
-     * then clears the session.
-     */
+
     public static boolean deleteAccount(String username) {
         if (username == null || !DatabaseManager.isConnected()) {
             return false;
@@ -139,7 +136,7 @@ public class UserManager {
             }
 
             DatabaseManager.getUsersCollection().deleteOne(Filters.eq("username", username));
-            // Remove user from all spaces in cloud
+
             SpaceManager.removeUserFromAllSpaces(username);
             logout();
             return true;
@@ -150,7 +147,6 @@ public class UserManager {
         }
     }
 
-    // Keep this empty or remove calls to it to stop using local files
     public static Map<String, String> getUsers() {
         return new HashMap<>();
     }
@@ -173,9 +169,7 @@ public class UserManager {
         }
     }
 
-    /**
-     * Update password using email (for forgot password flow)
-     */
+
     public static boolean updatePassword(String email, String newPassword) {
         if (email == null || newPassword == null) {
             return false;

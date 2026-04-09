@@ -28,7 +28,6 @@ public class PlanoraLandingPage extends Application {
         bgCircle.setTranslateX(-300);
         bgCircle.setTranslateY(-150);
 
-//transparent bg circle moving
         TranslateTransition bgMove = new TranslateTransition(Duration.seconds(12), bgCircle);
         bgMove.setFromX(-300);
         bgMove.setToX(-240);
@@ -187,7 +186,7 @@ public class PlanoraLandingPage extends Application {
             }
         });
 
-        // Add event handler for Learn More button
+
         learnMoreBtn.setOnAction(e -> {
             try {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(

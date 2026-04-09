@@ -8,15 +8,10 @@ import com.mongodb.client.model.Updates;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Manager class for handling space invitations
- * Handles creation, retrieval, and acceptance of space invitations
- */
+
 public class InvitationManager {
 
-    /**
-     * Create an invitation and save to MongoDB
-     */
+
     public static void createInvitation(String spaceName, String recipientUsername, String senderUsername) {
         if (!DatabaseManager.isConnected()) {
             System.err.println("MongoDB not connected. Cannot create invitation.");
@@ -41,9 +36,7 @@ public class InvitationManager {
         }
     }
 
-    /**
-     * Get all pending invitations for a user
-     */
+
     public static List<Invitation> getPendingInvitations(String username) {
         List<Invitation> invitations = new ArrayList<>();
         if (!DatabaseManager.isConnected()) {
@@ -70,9 +63,6 @@ public class InvitationManager {
         return invitations;
     }
 
-    /**
-     * Accept an invitation and add user to space members
-     */
     public static void acceptInvitation(String spaceName, String username) {
         if (!DatabaseManager.isConnected()) {
             System.err.println("MongoDB not connected. Cannot accept invitation.");
@@ -120,9 +110,7 @@ public class InvitationManager {
         }
     }
 
-    /**
-     * Decline an invitation
-     */
+
     public static void declineInvitation(String spaceName, String username) {
         if (!DatabaseManager.isConnected()) {
             System.err.println("MongoDB not connected. Cannot decline invitation.");
@@ -147,9 +135,6 @@ public class InvitationManager {
         }
     }
 
-    /**
-     * Helper method to convert MongoDB document to Invitation object
-     */
     private static Invitation documentToInvitation(Document doc) {
         return new Invitation(
                 doc.getString("spaceName"),

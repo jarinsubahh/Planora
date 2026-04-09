@@ -37,6 +37,10 @@ public class DashboardController {
     private VBox taskListVBox;
 
     @FXML
+    private Button demoButton;
+
+
+    @FXML
     private VBox mainContent;
 
     @FXML
@@ -75,7 +79,6 @@ public class DashboardController {
     private List<Task> currentTasks;
     private String selectedCategory = "All";
 
-    // Calendar integration
     private java.util.List<javafx.scene.Node> originalMainChildren;
 
     private Space currentActiveSpace = null;
@@ -108,7 +111,11 @@ public class DashboardController {
             taskSectionTitleLabel.setText(heading);
         }
     }
+    @FXML
+    private void handleButton(){
 
+        System.out.println("Hello");
+    }
 
     @FXML
     private void handleDashboard() {
@@ -146,7 +153,6 @@ public class DashboardController {
         return createTaskCard(task);
     }
 
-    // Calendar state
     private YearMonth currentYearMonth;
     private java.time.LocalDate selectedDate;
     private GridPane calendarGrid;
@@ -171,7 +177,7 @@ public class DashboardController {
     }
 
 private void buildCalendarView() {
-    // Header
+
     HBox header = new HBox(20);
     header.setAlignment(Pos.CENTER);
 
@@ -264,7 +270,6 @@ private void buildCalendarView() {
 
                     dateCell.getChildren().add(content);
 
-                    // Click -> show tasks for this date (replace calendar)
                     dateCell.setOnMouseClicked(ev -> showTasksForDate(date));
 
                     calendarGrid.add(dateCell, c, r + rowOffset);

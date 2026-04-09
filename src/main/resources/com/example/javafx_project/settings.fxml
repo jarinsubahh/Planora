@@ -11,12 +11,12 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="Infinity" maxWidth="Infinity" opacity="0.0" prefHeight="700.0" prefWidth="1200.0" styleClass="settings-root" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SettingsController">
+<BorderPane fx:id="rootPane" maxHeight="Infinity" maxWidth="Infinity" opacity="1.0" prefHeight="700.0" prefWidth="1200.0" styleClass="settings-root" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.SettingsController">
    <top>
       <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="settings-header">
          <children>
             <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" styleClass="sidebar-button" text="← Back" />
-            <Label prefHeight="32.0" prefWidth="375.0" styleClass="settings-title" text="                         Settings" />
+            <Label prefHeight="32.0" prefWidth="552.0" styleClass="settings-title" text="                                            Settings" />
             <Region HBox.hgrow="ALWAYS" />
          </children>
          <padding>

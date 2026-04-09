@@ -30,14 +30,13 @@ public class Task implements Serializable {
         this.createdAt = createdAt;
     }
 
-    // Add this constructor to Task.java
     public Task(String title, String description, String priority, LocalDate deadline) {
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.deadline = deadline;
         this.completed = false; // New tasks are not completed by default
-        this.id = (int) (System.currentTimeMillis() % 1000000000L);//edited so that explicitly becomes int
+        this.id = (int) (System.currentTimeMillis() % 1000000000L);
         this.createdAt = java.time.LocalDateTime.now();
     }
 

@@ -16,13 +16,7 @@ import javafx.stage.StageStyle;
 
 public class TimerCompletionDialog {
 
-    /**
-     * Shows a completion dialog for the focus session
-     * @param owner Parent stage
-     * @param onYes Callback when Yes is clicked
-     * @param onNo Callback when No is clicked
-     * @return The dialog Stage
-     */
+
     public static Stage show(Stage owner, Runnable onYes, Runnable onNo) {
         // Main container
         VBox root = new VBox(20);
@@ -45,7 +39,6 @@ public class TimerCompletionDialog {
         );
         titleLabel.setAlignment(Pos.CENTER);
 
-        // Question
         Label questionLabel = new Label("Have you finished your work?");
         questionLabel.setStyle(
             "-fx-font-size: 16px;" +
@@ -54,11 +47,9 @@ public class TimerCompletionDialog {
         );
         questionLabel.setAlignment(Pos.CENTER);
 
-        // Buttons container
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
 
-        // Yes Button
         Button yesButton = createStyledButton("Yes", true);
         yesButton.setStyle(
             "-fx-background-color: #C4B5FD;" +
@@ -72,7 +63,6 @@ public class TimerCompletionDialog {
             "-fx-effect: dropshadow(gaussian, rgba(122, 115, 255, 0.4), 10, 0, 0, 2);"
         );
 
-        // No Button
         Button noButton = createStyledButton("No", false);
         noButton.setStyle(
             "-fx-background-color: #E9D5FF;" +
@@ -90,7 +80,6 @@ public class TimerCompletionDialog {
 
         root.getChildren().addAll(titleLabel, questionLabel, buttonBox);
 
-        // Create dialog stage
         Scene dialogScene = new Scene(root, 450, 250);
         dialogScene.setFill(Color.TRANSPARENT);
 
@@ -111,7 +100,6 @@ public class TimerCompletionDialog {
             if (onNo != null) onNo.run();
         });
 
-        // Make dialog appear above owner
         dialogStage.setOnShown(e -> {
             dialogStage.setX(owner.getX() + (owner.getWidth() - dialogStage.getWidth()) / 2);
             dialogStage.setY(owner.getY() + (owner.getHeight() - dialogStage.getHeight()) / 2);

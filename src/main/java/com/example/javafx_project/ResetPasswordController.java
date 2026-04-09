@@ -6,9 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-/**
- * Controller for resetting user password after verification
- */
+
 public class ResetPasswordController {
     @FXML private Label userEmailLabel;
     @FXML private PasswordField newPasswordField;
@@ -47,7 +45,6 @@ public class ResetPasswordController {
             return;
         }
 
-        // Update password in database
         boolean success = UserManager.updatePassword(userEmail, newPassword);
         
         if (success) {

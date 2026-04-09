@@ -25,11 +25,7 @@ public class TaskService {
         if (task == null || task.getUserId() == null || !DatabaseManager.isConnected()) {
             return;
         }
-        Document doc = new Document("user_id", task.getUserId())
-                .append("title", task.getTitle())
-                .append("description", task.getDescription())
-                .append("deadline", task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null)
-                .append("category", task.getCategory())
+        Document doc = new Document("user_id", task.getUserId()).append("title", task.getTitle()).append("description", task.getDescription()).append("deadline", task.getDeadline() != null ? task.getDeadline().format(DATE_FORMAT) : null).append("category", task.getCategory())
                 .append("priority", task.getPriority())
                 .append("completed", task.isCompleted())
                 .append("created_at", LocalDateTime.now().format(DATETIME_FORMAT));
@@ -111,7 +107,6 @@ public class TaskService {
         getCollection().deleteOne(filter);
     }
 
-    /** Removes all tasks owned by a user (e.g. account deletion). */
     public static void deleteAllTasksForUser(String userId) {
         if (!DatabaseManager.isConnected() || userId == null) {
             return;

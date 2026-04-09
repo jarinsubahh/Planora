@@ -14,7 +14,7 @@ public class SignUpController {
     @FXML private PasswordField passwordField, confirmPasswordField;
     @FXML private Label errorLabel;
 
-    /** Basic email shape: local@domain.tld (domain must contain a dot after @). */
+
     private static boolean isValidEmailFormat(String email) {
         if (email == null) {
             return false;

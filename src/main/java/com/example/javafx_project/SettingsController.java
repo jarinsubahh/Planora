@@ -29,8 +29,7 @@ public class SettingsController {
         this.onBack = onBack;
     }
 
-    private static final DateTimeFormatter MEMBER_SINCE_FORMAT =
-            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.ENGLISH);
+    private static final DateTimeFormatter MEMBER_SINCE_FORMAT = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.ENGLISH);
 
     @FXML
     private BorderPane rootPane;

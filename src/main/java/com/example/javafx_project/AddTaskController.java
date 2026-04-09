@@ -78,10 +78,9 @@ public class AddTaskController {
 
     @FXML
     private void initialize() {
-        // Set default priority
+
         selectPriorityButton(lowButton, "Low");
 
-        // Set category items
         categoryComboBox.getItems().addAll("Study", "Work", "Personal", "Health", "Other");
     }
 
@@ -90,10 +89,8 @@ public class AddTaskController {
         Button clickedButton = (Button) event.getSource();
         String priority = clickedButton.getText();
 
-        // Reset all buttons
         resetPriorityButtons();
 
-        // Select the clicked one
         selectPriorityButton(clickedButton, priority);
         selectedPriority = priority;
     }
@@ -153,7 +150,7 @@ public class AddTaskController {
         } else {
             if (currentSpace != null) {
                 currentSpace.getSpaceTasks().add(task);
-                // Save to MongoDB (cloud-first)
+
                 if (DatabaseManager.isConnected()) {
                     new Thread(() -> DatabaseManager.saveSpace(currentSpace)).start();
                 } else {
@@ -164,10 +161,8 @@ public class AddTaskController {
             }
         }
 
-        // Close the modal
         closeWindow();
 
-        // Refresh dashboard if needed (can be handled by dashboard controller)
     }
 
     @FXML
